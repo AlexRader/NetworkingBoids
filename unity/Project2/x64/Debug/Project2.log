@@ -1,0 +1,12 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(377,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
+  test.cpp
+     Creating library C:\Users\rosser.martinez\Desktop\NetworkingBoids\unity\Project2\Build\BoidEvents.lib and object C:\Users\rosser.martinez\Desktop\NetworkingBoids\unity\Project2\Build\BoidEvents.exp
+RakNet.lib(GetTime.obj) : warning LNK4099: PDB 'RakNet.pdb' was not found with 'RakNet.lib(GetTime.obj)' or at 'C:\Users\rosser.martinez\Desktop\NetworkingBoids\unity\Project2\Build\RakNet.pdb'; linking object as if no debug info
+RakNet.lib(Itoa.obj) : warning LNK4099: PDB 'RakNet.pdb' was not found with 'RakNet.lib(Itoa.obj)' or at 'C:\Users\rosser.martinez\Desktop\NetworkingBoids\unity\Project2\Build\RakNet.pdb'; linking object as if no debug info
+RakNet.lib(LocklessTypes.obj) : warning LNK4099: PDB 'RakNet.pdb' was not found with 'RakNet.lib(LocklessTypes.obj)' or at 'C:\Users\rosser.martinez\Desktop\NetworkingBoids\unity\Project2\Build\RakNet.pdb'; linking object as if no debug info
+RakNet.lib(RakNetSocket2.obj) : warning LNK4099: PDB 'RakNet.pdb' was not found with 'RakNet.lib(RakNetSocket2.obj)' or at 'C:\Users\rosser.martinez\Desktop\NetworkingBoids\unity\Project2\Build\RakNet.pdb'; linking object as if no debug info
+RakNet.lib(RakNetTypes.obj) : warning LNK4099: PDB 'RakNet.pdb' was not found with 'RakNet.lib(RakNetTypes.obj)' or at 'C:\Users\rosser.martinez\Desktop\NetworkingBoids\unity\Project2\Build\RakNet.pdb'; linking object as if no debug info
+RakNet.lib(RakSleep.obj) : warning LNK4099: PDB 'RakNet.pdb' was not found with 'RakNet.lib(RakSleep.obj)' or at 'C:\Users\rosser.martinez\Desktop\NetworkingBoids\unity\Project2\Build\RakNet.pdb'; linking object as if no debug info
+RakNet.lib(RakThread.obj) : warning LNK4099: PDB 'RakNet.pdb' was not found with 'RakNet.lib(RakThread.obj)' or at 'C:\Users\rosser.martinez\Desktop\NetworkingBoids\unity\Project2\Build\RakNet.pdb'; linking object as if no debug info
+RakNet.lib(SuperFastHash.obj) : warning LNK4099: PDB 'RakNet.pdb' was not found with 'RakNet.lib(SuperFastHash.obj)' or at 'C:\Users\rosser.martinez\Desktop\NetworkingBoids\unity\Project2\Build\RakNet.pdb'; linking object as if no debug info
+  Project2.vcxproj -> C:\Users\rosser.martinez\Desktop\NetworkingBoids\unity\Project2\Build\BoidEvents.dll
