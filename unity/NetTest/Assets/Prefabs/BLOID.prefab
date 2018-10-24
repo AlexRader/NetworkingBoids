@@ -39,7 +39,7 @@ GameObject:
   - component: {fileID: 4132704835071290}
   - component: {fileID: 114858100844204710}
   m_Layer: 0
-  m_Name: BOID
+  m_Name: BLOID
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -137,8 +137,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57d66230de8a476479199543094039f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  position: {x: 0, y: 0}
-  velocity: {x: 0, y: 0}
-  acceleration: {x: 0, y: 0}
-  moveSpeed: 0
-  rotation: 0
+  directionInt: 0
+  direction: {x: 0, y: 0, z: 0}
+  directionEnd: {x: 0, y: 0, z: 0}
+  lerpTimer: 0
+  maxLerpTimer: 0
+  lerpValue: 0

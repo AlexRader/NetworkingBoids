@@ -3,38 +3,82 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BoidBehavior : MonoBehaviour {
+    //disclaimer, not really boids
 
-    public Vector2 position;
-    public Vector2 velocity;
-    public Vector2 acceleration;
+    public int directionInt; //0 north, 1 east, 2 south, 3 west
 
-    public float moveSpeed;
+    public Vector3 direction;
+    public Vector3 directionEnd; //direction * magnitude for distance to lerp to
 
-    public float rotation; //x rotation specifically
+    public float lerpTimer;
+    public float maxLerpTimer;
+    public float lerpValue;
 
 	// Use this for initialization
 	void Start () {
-        this.transform.position = position;
+        direction = Vector3.zero;
+
+        maxLerpTimer = 5;
+
+        changeDirection();
+
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
-        //get stats from server
-        ///????
 
-        //transform based off velocity
-        position += velocity;
+        lerpTimer += Time.deltaTime;
 
-        //apply transformation to transform
-        this.transform.position = position;
+        if (lerpTimer > maxLerpTimer)
+        {
+            lerpTimer = maxLerpTimer;
+        }
+
+        lerpValue = lerpTimer / maxLerpTimer;
+
+        transform.position = Vector3.Lerp(transform.position, directionEnd, lerpValue);
+        
+
+    }
 
 
+    void changeDirection()
+    {
 
-        //reset
-        ///position = Vector2.zero;
-        velocity = Vector2.zero;
+        //get direction int from peer
+        directionInt = Random.Range(0, 7);
 
-	}
+
+        switch (directionInt)
+        {
+            case 0:
+                direction = Vector3.forward;
+                break;
+            case 1:
+                direction = Vector3.right;
+                break;
+            case 2:
+                direction = Vector3.back;
+                break;
+            case 3:
+                direction = Vector3.left;
+                break;
+            case 4:
+                direction = Vector3.up;
+                break;
+            case 5:
+                direction = Vector3.down;
+                break;
+
+            default:
+                direction = Vector3.zero;
+                break;
+        }
+
+        directionEnd = transform.position + (direction * 5);
+
+        lerpTimer = 0;
+    }
 
 }
