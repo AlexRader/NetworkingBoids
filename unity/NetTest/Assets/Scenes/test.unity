@@ -266,6 +266,7 @@ MonoBehaviour:
   boid: {fileID: 1961780607563680, guid: 675aac3579080dd40b5cf8df297c805d, type: 2}
   timer: 0
   maxTime: 3
+  bloidList: []
 --- !u!4 &1221462299
 Transform:
   m_ObjectHideFlags: 0

@@ -40,7 +40,7 @@ GameObject:
   - component: {fileID: 114858100844204710}
   m_Layer: 0
   m_Name: BLOID
-  m_TagString: Untagged
+  m_TagString: BLOID
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -140,6 +140,7 @@ MonoBehaviour:
   directionInt: 0
   direction: {x: 0, y: 0, z: 0}
   directionEnd: {x: 0, y: 0, z: 0}
+  objId: 0
   lerpTimer: 0
   maxLerpTimer: 0
   lerpValue: 0

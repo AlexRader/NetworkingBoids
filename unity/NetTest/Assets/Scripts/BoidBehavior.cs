@@ -10,23 +10,31 @@ public class BoidBehavior : MonoBehaviour {
     public Vector3 direction;
     public Vector3 directionEnd; //direction * magnitude for distance to lerp to
 
+    public int objId;
+
     public float lerpTimer;
     public float maxLerpTimer;
     public float lerpValue;
+
+    struct BloidData
+    {
+        int objectId;
+        float x, y, z;
+        int direction;
+
+    };
+
+  //    BloidData lastData;
 
 	// Use this for initialization
 	void Start () {
         direction = Vector3.zero;
 
         maxLerpTimer = 5;
-
-        changeDirection();
-
 	}
 	
 	// Update is called once per frame
 	void Update () {
-
 
         lerpTimer += Time.deltaTime;
 
@@ -38,16 +46,17 @@ public class BoidBehavior : MonoBehaviour {
         lerpValue = lerpTimer / maxLerpTimer;
 
         transform.position = Vector3.Lerp(transform.position, directionEnd, lerpValue);
-        
 
     }
 
 
-    void changeDirection()
+    public void changeDirection(int newDirection)
     {
 
         //get direction int from peer
-        directionInt = Random.Range(0, 7);
+
+        //directionInt = Random.Range(0, 6);
+        directionInt = newDirection;
 
 
         switch (directionInt)
