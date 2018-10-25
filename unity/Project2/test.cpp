@@ -59,7 +59,6 @@ RakNet::RakPeerInterface *gpPeerInstance = RakNet::RakPeerInterface::GetInstance
 			switch (packet->data[0])
 			{
 			case 135:
-			
 
 				const BloidMessage *newBloidData = (BloidMessage *)packet->data;
 
@@ -76,7 +75,12 @@ RakNet::RakPeerInterface *gpPeerInstance = RakNet::RakPeerInterface::GetInstance
 				return newData;
 			
 				break;
+			//default:
+			//	BloidData newData1;
+			//	return newData;
+			//	break;
 			}
+
 
 		
 	}
@@ -89,7 +93,7 @@ RakNet::RakPeerInterface *gpPeerInstance = RakNet::RakPeerInterface::GetInstance
 		//message as "game message type"
 		BloidMessage bloid;
 		
-		bloid.objectId = 135;
+		bloid.objectId = 204;
 		bloid.x = x;
 		bloid.y = y;
 		bloid.z = z;

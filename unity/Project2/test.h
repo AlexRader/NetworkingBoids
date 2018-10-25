@@ -40,9 +40,9 @@ extern "C"
 
 	struct BloidData {
 
-		int objectId;
-		float x, y, z;
-		int direction;
+		int objectId = -1;
+		float x = 0, y = 0, z = 0;
+		int direction = -1;
 
 	};
 

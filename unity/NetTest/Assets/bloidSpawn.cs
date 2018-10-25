@@ -61,7 +61,9 @@ public class bloidSpawn : MonoBehaviour {
     public bool found;
 
 	// Use this for initialization
-	void Start () {
+	void Start ()
+    {
+        found = false;
         timer = maxTime;
 
         connectToServer(ipAddress);
@@ -74,42 +76,50 @@ public class bloidSpawn : MonoBehaviour {
     {
 
         timer -= Time.deltaTime;
+        //sorry dan but yes im calling this in update, I know its expensive, invoice me later
+        bloidList = GameObject.FindGameObjectsWithTag("BLOID");
 
-
-
-        if (timer <= 0)
+        BloidData newData = receiveData();
+        if (newData.objectId >= 0)
         {
-
-            BloidData newData = receiveData();
-
-                    Debug.Log("id " + newData.direction +
-                        "direction " + newData.direction);
-             
-
-            //sorry dan but yes im calling this in update, I know its expensive, invoice me later
-            bloidList = GameObject.FindGameObjectsWithTag("BLOID");
-
-            found = false;
-
+            
             for (int i = 0; i < bloidList.Length; i++)
             {
                 if (bloidList[i].GetComponent<BoidBehavior>().objId == newData.objectId)
                 {
-                    bloidList[i].GetComponent<BoidBehavior>().changeDirection(newData.direction);
                     found = true;
                 }
             }
-
             if (!found)
             {
+                //create new BLOID            
                 GameObject dorkus = Instantiate(boid, Vector3.zero, Quaternion.identity);
                 dorkus.GetComponent<BoidBehavior>().objId = newData.objectId;
                 dorkus.GetComponent<BoidBehavior>().changeDirection(newData.direction);
-
+                found = false;
             }
+            else
+            {
 
+                //get
+                for (int i = 0; i < bloidList.Length; i++)
+                {
+                    if (bloidList[i].GetComponent<BoidBehavior>().objId == newData.objectId)
+                    {
+                        bloidList[i].GetComponent<BoidBehavior>().changeDirection(newData.direction);
+                    }
+                }
+            }
+            
+        }
+      
+        if (timer <= 0)
+        {
             timer = maxTime;
 
+            Debug.Log("id " + newData.objectId +
+                        "direction " + newData.direction);
+             
         }
 
     }
