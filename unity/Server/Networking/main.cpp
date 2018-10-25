@@ -51,9 +51,14 @@ struct customMessage
 #pragma pack(push, 1)
 struct BloidMessage 
 {
-	GameMessages typeId = ID_GAME_MESSAGE_1;
+	//GameMessages typeId = ID_GAME_MESSAGE_1;
+	unsigned char typeID;
 
-	SentBloid sentBloid;
+	//BloidData sentBloid;
+
+	int objectId;
+	float x, y, z;
+	int direction;
 
 };
 #pragma pack(pop)
@@ -96,7 +101,7 @@ int main(void)
 	// We need to let the server accept incoming connections from the clients
 	peer->SetMaximumIncomingConnections(maxClients); //modified with local variables
 
-	for (int bl = 0; bl < 10; ++bl)
+	for (int bl = 0; bl < 32; ++bl)
 	{
 		Bloid newBloid(bl, 0, 0, 0, -1);
 		bloids.push_back(newBloid);
@@ -190,14 +195,25 @@ int main(void)
 				for (int i = 0; i < bloids.size(); ++i)
 				{
 					bloids.at(i).setBloidDirection();
-					myBloidMessage->sentBloid.objectId = bloids.at(i).objectId;
-					myBloidMessage->sentBloid.x = bloids.at(i).x;
-					myBloidMessage->sentBloid.y = bloids.at(i).y;
-					myBloidMessage->sentBloid.z = bloids.at(i).z;
-					myBloidMessage->sentBloid.direction = bloids.at(i).direction;
-					peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, false);
+					myBloidMessage->objectId = bloids.at(i).objectId;
+					myBloidMessage->x = bloids.at(i).x;
+					myBloidMessage->y = bloids.at(i).y;
+					myBloidMessage->z = bloids.at(i).z;
+					myBloidMessage->direction = bloids.at(i).direction;
+					peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+				
+					std::cout << "SENT BOID INFO:"
+						<< "ID: "
+					<<	myBloidMessage->objectId
+					<<	"DIRECTION: "
+					<<	myBloidMessage->direction
+					<<	" \n \n";
+				
+				
+				
 				}
 				
+
 			}
 		}
 

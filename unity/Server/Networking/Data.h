@@ -15,7 +15,7 @@ struct Bloid
 	void setBloidDirection();
 };
 
-struct SentBloid
+struct BloidData
 {
 	int objectId;
 	float x, y, z;
