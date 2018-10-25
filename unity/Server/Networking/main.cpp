@@ -20,6 +20,8 @@ retain a copy of the project on its database.”
 #include <vector>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>     
+#include <time.h>       
 #include <ctype.h> // needed for strlen
 #include "RakNet/RakPeerInterface.h" //include changed to correct directory
 #include "RakNet/MessageIdentifiers.h" //include changed to correct directory
@@ -52,7 +54,7 @@ struct customMessage
 struct BloidMessage 
 {
 	//GameMessages typeId = ID_GAME_MESSAGE_1;
-	unsigned char typeID;
+	unsigned char typeID = ID_GAME_MESSAGE_1;
 
 	//BloidData sentBloid;
 
@@ -194,23 +196,23 @@ int main(void)
 				timePrev = timeCurr;
 				for (int i = 0; i < bloids.size(); ++i)
 				{
+					srand(time(unsigned(NULL)));
+
 					bloids.at(i).setBloidDirection();
 					myBloidMessage->objectId = bloids.at(i).objectId;
 					myBloidMessage->x = bloids.at(i).x;
 					myBloidMessage->y = bloids.at(i).y;
 					myBloidMessage->z = bloids.at(i).z;
 					myBloidMessage->direction = bloids.at(i).direction;
-					peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
-				
-					std::cout << "SENT BOID INFO:"
+
+					std::cout
 						<< "ID: "
-					<<	myBloidMessage->objectId
-					<<	"DIRECTION: "
-					<<	myBloidMessage->direction
-					<<	" \n \n";
-				
-				
-				
+						<< myBloidMessage->objectId
+						<< " | DIRECTION: "
+						<< myBloidMessage->direction
+						<< " \n";
+
+					peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);			
 				}
 				
 

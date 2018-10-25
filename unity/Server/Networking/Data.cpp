@@ -46,6 +46,5 @@ void Bloid::updateBloid(float nX, float nY, float nZ)
 
 void Bloid::setBloidDirection()
 {
-	srand(time(unsigned(NULL)));
 	direction = rand() % 6;
 }
