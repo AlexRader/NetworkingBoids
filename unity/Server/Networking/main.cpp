@@ -71,10 +71,11 @@ using namespace RakNet;
 
 int main(void)
 {
+	const float SERVER_UPDATE = 33;
 	std::vector <Bloid> bloids;
 	std::vector <RakNet::RakNetGUID> IDsToUpdate;
 
-	float timePrev, timeCurr;
+	float timePrev, timeServerUpdate,timeCurr;
 	customMessage myModifyMessage[1];
 	BloidMessage myBloidMessage[1];
 
@@ -104,13 +105,16 @@ int main(void)
 	// We need to let the server accept incoming connections from the clients
 	peer->SetMaximumIncomingConnections(maxClients); //modified with local variables
 
-	for (int bl = 0; bl < 6; ++bl)
+	for (int bl = 0; bl < 4; ++bl)
 	{
-		Bloid newBloid(bl, 0, 0, 0, -1);
+		Bloid newBloid(bl, 0, 0, 0, -1, RakNet::GetTime());
+		newBloid.setBloidDirection();
+
 		bloids.push_back(newBloid);
 	}
 
 	timePrev = RakNet::GetTimeMS();
+	timeServerUpdate = RakNet::GetTimeMS();
 
 	while (1)
 	{
@@ -186,31 +190,32 @@ int main(void)
 				break;
 			}
 		}
-		//Lab 3 timed server event messages for connected players (note host is excluded as we dont want evereyone losing connection)
-		for (int i = 0; i < bloids.size(); ++i)
+
+		if (timeCurr - timeServerUpdate >= SERVER_UPDATE)
 		{
-			myBloidMessage->objectId = bloids.at(i).objectId;
-			myBloidMessage->x = bloids.at(i).x;
-			myBloidMessage->y = bloids.at(i).y;
-			myBloidMessage->z = bloids.at(i).z;
-			myBloidMessage->direction = bloids.at(i).direction;
+			timeServerUpdate = timeCurr;
+			for (int i = 0; i < bloids.size(); ++i)
+			{
+				bloids.at(i).updateBloid(RakNet::GetTime());
+				myBloidMessage->objectId = bloids.at(i).objectId;
+				myBloidMessage->x = bloids.at(i).x;
+				myBloidMessage->y = bloids.at(i).y;
+				myBloidMessage->z = bloids.at(i).z;
+				myBloidMessage->direction = bloids.at(i).direction;
 
-			//std::cout
-			//	<< "ID: "
-			//	<< myBloidMessage->objectId
-			//	<< " | DIRECTION: "
-			//	<< myBloidMessage->direction
-			//	<< " \n";
+				std::cout
+					<< "ID: "
+					<< myBloidMessage->objectId
+					<< " | DIRECTION: "
+					<< myBloidMessage->direction
+					<< " \n";
 
-			peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+				peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+			}
 		}
 		//spookiness at intervals of elapsed time
 		if (timeCurr - timePrev  >= 3000)
 		{
-			//myModifyMessage->typeId = ID_GAME_MESSAGE_2;
-			//strncpy(myModifyMessage->messageStr, "Kitty is pretty spoopy! \n", sizeof(myModifyMessage->messageStr));
-			//peer->Send((char*)myModifyMessage, sizeof(customMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
-
 			//this is where we update
 			timePrev = timeCurr;
 			srand(time(unsigned(NULL)));

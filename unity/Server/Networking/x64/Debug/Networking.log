@@ -1,8 +1,11 @@
 ﻿  main.cpp
 e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(58): warning C4305: 'initializing': truncation from 'GameMessages' to 'char'
 e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(58): warning C4309: 'initializing': truncation of constant value
-e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(113): warning C4244: '=': conversion from 'RakNet::TimeMS' to 'float', possible loss of data
+e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(110): warning C4244: 'argument': conversion from 'RakNet::Time' to 'float', possible loss of data
+e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(116): warning C4244: '=': conversion from 'RakNet::TimeMS' to 'float', possible loss of data
 e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(117): warning C4244: '=': conversion from 'RakNet::TimeMS' to 'float', possible loss of data
-e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(216): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(237): warning C4244: '=': conversion from 'RakNet::TimeMS' to 'float', possible loss of data
+e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(121): warning C4244: '=': conversion from 'RakNet::TimeMS' to 'float', possible loss of data
+e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(199): warning C4244: 'argument': conversion from 'RakNet::Time' to 'float', possible loss of data
+e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(221): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(242): warning C4244: '=': conversion from 'RakNet::TimeMS' to 'float', possible loss of data
   Networking.vcxproj -> E:\FinalYearFolder\NetworkingClass\NetworkingBoids\unity\Server\x64\Debug\Networking.exe

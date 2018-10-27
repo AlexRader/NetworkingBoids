@@ -35,23 +35,23 @@ struct BloidMessage
 //
 //};
 
-public class bloidSpawn : MonoBehaviour
+public class bloidSpawn : myDataStructs
 {
-    [StructLayout(LayoutKind.Sequential, Size = 20), System.Serializable]
-    struct BloidData
-    {
-        [MarshalAsAttribute(UnmanagedType.I4, SizeConst = 4)]
-        public int objectId;
-        [MarshalAsAttribute(UnmanagedType.R4, SizeConst = 4)]
-        public float x;
-        [MarshalAsAttribute(UnmanagedType.R4, SizeConst = 4)]
-        public float y;
-        [MarshalAsAttribute(UnmanagedType.R4, SizeConst = 4)]
-        public float z;
-        [MarshalAsAttribute(UnmanagedType.I4, SizeConst = 4)]
-        public int direction;
-
-    };
+    //[StructLayout(LayoutKind.Sequential, Size = 20), System.Serializable]
+    //struct BloidData
+    //{
+    //    [MarshalAsAttribute(UnmanagedType.I4, SizeConst = 4)]
+    //    public int objectId;
+    //    [MarshalAsAttribute(UnmanagedType.R4, SizeConst = 4)]
+    //    public float x;
+    //    [MarshalAsAttribute(UnmanagedType.R4, SizeConst = 4)]
+    //    public float y;
+    //    [MarshalAsAttribute(UnmanagedType.R4, SizeConst = 4)]
+    //    public float z;
+    //    [MarshalAsAttribute(UnmanagedType.I4, SizeConst = 4)]
+    //    public int direction;
+    //
+    //};
     [DllImport("BoidEvents")]
     static extern void raknetPeer();
 
@@ -84,13 +84,13 @@ public class bloidSpawn : MonoBehaviour
     {
         found = false;
         timer = maxTime;
-        BloidData var = Test();
-
-        Debug.Log(var.objectId);
-        Debug.Log(var.direction);
-        Debug.Log(var.x);
-        Debug.Log(var.y);
-        Debug.Log(var.z);
+        //BloidData var = Test();
+        //
+        //Debug.Log(var.objectId);
+        //Debug.Log(var.direction);
+        //Debug.Log(var.x);
+        //Debug.Log(var.y);
+        //Debug.Log(var.z);
 
         raknetPeer();
         connectToServer(ipAddress);
@@ -100,12 +100,13 @@ public class bloidSpawn : MonoBehaviour
     void Update ()
     {
 
-        timer -= Time.deltaTime;
+        //timer -= Time.deltaTime;
         //sorry dan but yes im calling this in update, I know its expensive, invoice me later
         bloidList = GameObject.FindGameObjectsWithTag("BLOID");
 
         BloidData newData = receiveData();
-        Debug.Log(newData.objectId);
+        if (newData.objectId < 6)
+            Debug.Log(newData.objectId);
 
 
         if (newData.objectId >= 0)
@@ -120,21 +121,22 @@ public class bloidSpawn : MonoBehaviour
             }
             if (!found)
             {
+                Debug.Log("Created");
                 //create new BLOID            
-                GameObject dorkus = Instantiate(boid, Vector3.zero, Quaternion.identity);
+                GameObject dorkus = Instantiate(boid, new Vector3(newData.x, newData.y, newData.z), Quaternion.identity);
                 dorkus.GetComponent<BoidBehavior>().objId = newData.objectId;
-                dorkus.GetComponent<BoidBehavior>().changeDirection(newData.direction);
+                //dorkus.GetComponent<BoidBehavior>().changeDirection(newData.direction);
                 found = false;
             }
             else
             {
-
                 //get
                 for (int i = 0; i < bloidList.Length; i++)
                 {
                     if (bloidList[i].GetComponent<BoidBehavior>().objId == newData.objectId)
                     {
-                        bloidList[i].GetComponent<BoidBehavior>().changeDirection(newData.direction);
+                        bloidList[i].GetComponent<BoidBehavior>().SendMessage("setPos", new Vector3(newData.x, newData.y, newData.z));
+                        //bloidList[i].GetComponent<BoidBehavior>().changeDirection(newData.direction);
                     }
                 }
             }
