@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Runtime.InteropServices;
-using System;
+//using System;
 
 //struct BloidMessage
 //{
@@ -14,7 +14,7 @@ using System;
 
 //};
 
-[StructLayout(LayoutKind.Sequential, Pack = 1)]
+//[StructLayout(LayoutKind.Sequential, Pack = 1)]
 
 struct BloidMessage
 {
@@ -27,26 +27,45 @@ struct BloidMessage
 };
 
 
-struct BloidData
+//struct BloidData
+//{
+//    public int objectId;
+//    public float x, y, z;
+//    public int direction;
+//
+//};
+
+public class bloidSpawn : MonoBehaviour
 {
-    public int objectId;
-    public float x, y, z;
-    public int direction;
+    [StructLayout(LayoutKind.Sequential, Size = 20), System.Serializable]
+    struct BloidData
+    {
+        [MarshalAsAttribute(UnmanagedType.I4, SizeConst = 4)]
+        public int objectId;
+        [MarshalAsAttribute(UnmanagedType.R4, SizeConst = 4)]
+        public float x;
+        [MarshalAsAttribute(UnmanagedType.R4, SizeConst = 4)]
+        public float y;
+        [MarshalAsAttribute(UnmanagedType.R4, SizeConst = 4)]
+        public float z;
+        [MarshalAsAttribute(UnmanagedType.I4, SizeConst = 4)]
+        public int direction;
 
-};
-
-public class bloidSpawn : MonoBehaviour {
-
-
+    };
+    [DllImport("BoidEvents")]
+    static extern void raknetPeer();
 
     [DllImport("BoidEvents")]
     static extern void connectToServer([MarshalAs(UnmanagedType.LPStr)]string ip);
 
     [DllImport("BoidEvents")]
-    static extern unsafe BloidData receiveData();
+    static extern BloidData receiveData();
 
     [DllImport("BoidEvents")]
     static extern void sendData(int id, float x, float y, float z, int dir);
+
+    [DllImport("BoidEvents")]
+    static extern BloidData Test();
 
 
     public GameObject boid;
@@ -54,7 +73,7 @@ public class bloidSpawn : MonoBehaviour {
     public float timer;
     public float maxTime = 1.5f;
 
-    public string ipAddress = "216.93.149.128";
+    public string ipAddress = "216.93.149.120";
     public char[] ipAddressChar;
    
     public GameObject[] bloidList;
@@ -65,10 +84,16 @@ public class bloidSpawn : MonoBehaviour {
     {
         found = false;
         timer = maxTime;
+        BloidData var = Test();
 
+        Debug.Log(var.objectId);
+        Debug.Log(var.direction);
+        Debug.Log(var.x);
+        Debug.Log(var.y);
+        Debug.Log(var.z);
+
+        raknetPeer();
         connectToServer(ipAddress);
-
-
     }
 
     // Update is called once per frame
@@ -80,6 +105,9 @@ public class bloidSpawn : MonoBehaviour {
         bloidList = GameObject.FindGameObjectsWithTag("BLOID");
 
         BloidData newData = receiveData();
+        Debug.Log(newData.objectId);
+
+
         if (newData.objectId >= 0)
         {
             
@@ -112,15 +140,5 @@ public class bloidSpawn : MonoBehaviour {
             }
             
         }
-      
-        if (timer <= 0)
-        {
-            timer = maxTime;
-
-            Debug.Log("id " + newData.objectId +
-                        "direction " + newData.direction);
-             
-        }
-
     }
 }

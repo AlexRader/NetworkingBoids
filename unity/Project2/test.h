@@ -7,13 +7,24 @@
 #include "RakNet/RakNetTypes.h"  // MessageID // include changed to correct directory
 #include <iostream>
 
-
+#ifdef BLOID_EXPORT
 #define BloidInfo __declspec (dllexport)
+#else
+#ifdef BLOID_IMPORT
+#define BloidInfo __declspec (dllimport)
+
+#else // BLOID_IMPORT
+
+#define BloidInfo
+#endif
+#endif
 
 
 //client plugin
+#ifdef __cplusplus
 extern "C"
 {
+#endif
 //	struct BloidMessage {
 //
 //		unsigned char typeID;
@@ -27,25 +38,32 @@ extern "C"
 //
 //	};
 
+#pragma pack(push, 1)
+struct BloidMessage {
 
-	struct BloidMessage {
+	char typeID;
 
-		char typeID;
+	int objectId;
+	float x, y, z;
+	int direction;
 
-		int objectId;
-		float x, y, z;
-		int direction;
+};
+#pragma pack(pop)
 
-	};
+#pragma pack(push, 1)
+struct BloidData {
 
-	struct BloidData {
+	int objectId = -1;
+	float x = 0;
+	float y = 0;
+	float z = 0;
+	int direction = -1;
 
-		int objectId = -1;
-		float x = 0, y = 0, z = 0;
-		int direction = -1;
+};
+#pragma pack(pop)
 
-	};
-
+	//initialize 
+	BloidInfo void raknetPeer();
 
 	//connect
 	BloidInfo void connectToServer(char* ip);
@@ -59,5 +77,9 @@ extern "C"
 	//disconnect
 	BloidInfo void kickRequest();
 
-	
+	//Test
+	BloidInfo BloidData Test();
+
+#ifdef __cplusplus
 }
+#endif

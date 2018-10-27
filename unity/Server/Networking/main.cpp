@@ -32,6 +32,7 @@ retain a copy of the project on its database.”
 #include "Proj2Events.h"
 #include "Proj2Queue.h"
 #include "Data.h"
+#include "BloidSerializer.h"
 
 enum GameMessages
 {
@@ -54,7 +55,7 @@ struct customMessage
 struct BloidMessage 
 {
 	//GameMessages typeId = ID_GAME_MESSAGE_1;
-	unsigned char typeID = ID_GAME_MESSAGE_1;
+	char typeID = ID_GAME_MESSAGE_1;
 
 	//BloidData sentBloid;
 
@@ -103,7 +104,7 @@ int main(void)
 	// We need to let the server accept incoming connections from the clients
 	peer->SetMaximumIncomingConnections(maxClients); //modified with local variables
 
-	for (int bl = 0; bl < 32; ++bl)
+	for (int bl = 0; bl < 6; ++bl)
 	{
 		Bloid newBloid(bl, 0, 0, 0, -1);
 		bloids.push_back(newBloid);
@@ -142,7 +143,10 @@ int main(void)
 			case ID_NEW_INCOMING_CONNECTION:
 			{
 				printf("A connection is incoming.\n");
-
+				for (int i = 0; i < bloids.size(); ++i)
+				{
+					peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+				}
 				strncpy(myModifyMessage->messageStr, "testing testing 1 2 3", sizeof(myModifyMessage->messageStr));
 				myModifyMessage->typeId = ID_GAME_MESSAGE_3;
 				peer->Send((char*)myModifyMessage, sizeof(customMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
@@ -183,39 +187,50 @@ int main(void)
 			}
 		}
 		//Lab 3 timed server event messages for connected players (note host is excluded as we dont want evereyone losing connection)
-		if (isServer)
+		for (int i = 0; i < bloids.size(); ++i)
 		{
-			//spookiness at intervals of elapsed time
-			if (timeCurr - timePrev  >= 3000)
+			myBloidMessage->objectId = bloids.at(i).objectId;
+			myBloidMessage->x = bloids.at(i).x;
+			myBloidMessage->y = bloids.at(i).y;
+			myBloidMessage->z = bloids.at(i).z;
+			myBloidMessage->direction = bloids.at(i).direction;
+
+			//std::cout
+			//	<< "ID: "
+			//	<< myBloidMessage->objectId
+			//	<< " | DIRECTION: "
+			//	<< myBloidMessage->direction
+			//	<< " \n";
+
+			peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+		}
+		//spookiness at intervals of elapsed time
+		if (timeCurr - timePrev  >= 3000)
+		{
+			//myModifyMessage->typeId = ID_GAME_MESSAGE_2;
+			//strncpy(myModifyMessage->messageStr, "Kitty is pretty spoopy! \n", sizeof(myModifyMessage->messageStr));
+			//peer->Send((char*)myModifyMessage, sizeof(customMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+
+			//this is where we update
+			timePrev = timeCurr;
+			srand(time(unsigned(NULL)));
+			for (int i = 0; i < bloids.size(); ++i)
 			{
-				//myModifyMessage->typeId = ID_GAME_MESSAGE_2;
-				//strncpy(myModifyMessage->messageStr, "Kitty is pretty spoopy! \n", sizeof(myModifyMessage->messageStr));
-				//peer->Send((char*)myModifyMessage, sizeof(customMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+				bloids.at(i).setBloidDirection();
+				myBloidMessage->objectId = bloids.at(i).objectId;
+				myBloidMessage->x = bloids.at(i).x;
+				myBloidMessage->y = bloids.at(i).y;
+				myBloidMessage->z = bloids.at(i).z;
+				myBloidMessage->direction = bloids.at(i).direction;
 
-				//this is where we update
-				timePrev = timeCurr;
-				for (int i = 0; i < bloids.size(); ++i)
-				{
-					srand(time(unsigned(NULL)));
+				std::cout
+					<< "ID: "
+					<< myBloidMessage->objectId
+					<< " | DIRECTION: "
+					<< myBloidMessage->direction
+					<< " \n";
 
-					bloids.at(i).setBloidDirection();
-					myBloidMessage->objectId = bloids.at(i).objectId;
-					myBloidMessage->x = bloids.at(i).x;
-					myBloidMessage->y = bloids.at(i).y;
-					myBloidMessage->z = bloids.at(i).z;
-					myBloidMessage->direction = bloids.at(i).direction;
-
-					std::cout
-						<< "ID: "
-						<< myBloidMessage->objectId
-						<< " | DIRECTION: "
-						<< myBloidMessage->direction
-						<< " \n";
-
-					peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);			
-				}
-				
-
+				peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);			
 			}
 		}
 
