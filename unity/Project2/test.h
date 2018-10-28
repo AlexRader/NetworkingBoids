@@ -76,6 +76,7 @@ struct customMessage
 };
 #pragma pack(pop)
 
+
 	//initialize 
 	BloidInfo void raknetPeer();
 

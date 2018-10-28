@@ -189,7 +189,7 @@ int main(void)
 						myBloidMessage->y = newBloid.y;
 						myBloidMessage->z = newBloid.z;
 						myBloidMessage->direction = newBloid.direction;
-						peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+						peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 					}
 					myModifyMessage->typeId = ID_GAME_MESSAGE_3;
 					peer->Send((char*)myModifyMessage, sizeof(customMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);

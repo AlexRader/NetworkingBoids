@@ -58,6 +58,12 @@ public class bloidShareSpawn : myDataStructs
                         found = true;
                     }
                 }
+                if (!found)
+                {
+                    GameObject dorkus = Instantiate(boid, new Vector3(newData.x, newData.y, newData.z), Quaternion.identity);
+                    dorkus.GetComponent<BoidBehavior>().objId = newData.objectId;
+                    bloidList1.Add(dorkus);
+                }
                 found = false;
             }
         }
