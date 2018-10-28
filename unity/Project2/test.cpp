@@ -4,7 +4,7 @@
 
 //client plugin
 RakNet::RakPeerInterface *gpPeerInstance;// = RakNet::RakPeerInterface::GetInstance();
-
+RakNet::RakNetGUID hostID;
 
 void raknetPeer()
 {
@@ -20,7 +20,7 @@ void connectToServer(char* ip)
 
 	unsigned short serverPort = 1111;
 
-	strcpy(str, "216.93.149.120");
+	strcpy(str, ip);
 
 	gpPeerInstance->Connect(str, serverPort, 0, 0);
 
@@ -39,7 +39,6 @@ BloidData receiveData()
 		{
 			const BloidMessage *newBloidData = (BloidMessage *)packet->data;
 
-			//return (char*)packet->data;
 
 			BloidData newData;
 
@@ -64,19 +63,21 @@ BloidData receiveData()
 
 
 	//send data back to server
-void sendData(int id, float x, float y, float z, int dir, char* serverGuid)
+void sendData(int id, float x, float y, float z, int dir)
 {
 
 	//message as "game message type"
 	BloidMessage bloid;
 	
-	bloid.objectId = 204;
+	bloid.typeID = ID_GAME_MESSAGE_4;
+
+	bloid.objectId = id;
 	bloid.x = x;
 	bloid.y = y;
 	bloid.z = z;
 	bloid.direction = dir;
 
-	gpPeerInstance->Send((char *)&bloid, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::RakPeerInterface::GetInstance()->GetGUIDFromIndex(0), true);
+	gpPeerInstance->Send((char *)&bloid, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, hostID, false);
 
 }
 
@@ -107,6 +108,7 @@ BloidData InitialData()
 		{
 		case ID_CONNECTION_REQUEST_ACCEPTED:
 		{
+			hostID = packet->guid;
 			BloidData dat = Test();
 			return dat;
 		}

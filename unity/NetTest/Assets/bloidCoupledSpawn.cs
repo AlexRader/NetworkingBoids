@@ -2,21 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Runtime.InteropServices;
-//using System;
 
 
-struct BloidMessage
+public class bloidCoupledSpawn : myDataStructs
 {
-    byte typeID;
-
-    public int objectId;
-    public float x, y, z;
-    public int direction;
-
-};
-public class bloidSpawn : myDataStructs
-{
-
     public GameObject boid;
 
     public string ipAddress;

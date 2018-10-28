@@ -39,9 +39,10 @@ extern "C"
 //	};
 enum GameMessages
 {
-	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1,
-	ID_GAME_MESSAGE_2 = ID_USER_PACKET_ENUM + 2,
-	ID_GAME_MESSAGE_3 = ID_USER_PACKET_ENUM + 3
+	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1, // for packets sent usually 
+	ID_GAME_MESSAGE_2 = ID_USER_PACKET_ENUM + 2, // for packets on join
+	ID_GAME_MESSAGE_3 = ID_USER_PACKET_ENUM + 3, // cancel packet
+	ID_GAME_MESSAGE_4 = ID_USER_PACKET_ENUM + 4	 // send client boids
 };
 #pragma pack(push, 1)
 struct BloidMessage {

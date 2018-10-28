@@ -20,4 +20,21 @@ public class myDataStructs : MonoBehaviour
         public int direction;
 
     };
+    [DllImport("BoidEvents")]
+    public static extern void raknetPeer();
+
+    [DllImport("BoidEvents")]
+    public static extern void connectToServer([MarshalAs(UnmanagedType.LPStr)]string ip);
+
+    [DllImport("BoidEvents")]
+    public static extern BloidData receiveData();
+
+    [DllImport("BoidEvents")]
+    public static extern void sendData(int id, float x, float y, float z, int dir);
+
+    [DllImport("BoidEvents")]
+    public static extern BloidData Test();
+
+    [DllImport("BoidEvents")]
+    public static extern BloidData InitialData();
 }

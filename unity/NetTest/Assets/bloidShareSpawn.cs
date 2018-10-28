@@ -2,30 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Runtime.InteropServices;
-//using System;
 
 
-struct BloidMessage
+public class bloidShareSpawn : myDataStructs
 {
-    byte typeID;
-
-    public int objectId;
-    public float x, y, z;
-    public int direction;
-
-};
-public class bloidSpawn : myDataStructs
-{
-
     public GameObject boid;
 
     public string ipAddress;
     public char[] ipAddressChar;
    
     public GameObject[] bloidList;
-    public List<GameObject> bloidList1;
+    public List<GameObject> bloidList1; // all objects
+    public List<GameObject> bloidList2; // my objects to update locally 
     public bool found;
     public bool allowUpdates;
+    public Material localObject;
 
 	// Use this for initialization
 	void Start ()
@@ -51,6 +42,10 @@ public class bloidSpawn : myDataStructs
     {
         if (allowUpdates)
         {
+            for (int i = 0; i < bloidList2.Count; ++i)
+            {
+                bloidList2[i].GetComponent<BoidBehavior>().SendMessage("simulatePos");
+            }
             BloidData newData = receiveData();
             if (newData.objectId >= 0)
             {
@@ -59,6 +54,7 @@ public class bloidSpawn : myDataStructs
                     if (bloidList1[i].GetComponent<BoidBehavior>().objId == newData.objectId)
                     {
                         bloidList1[i].GetComponent<BoidBehavior>().SendMessage("setPos", new Vector3(newData.x, newData.y, newData.z));
+                        bloidList1[i].GetComponent<BoidBehavior>().direction = newData.direction;
                         found = true;
                     }
                 }
@@ -79,9 +75,28 @@ public class bloidSpawn : myDataStructs
             StartCoroutine("InitialLoad");
         }
         else if (newData.objectId == -1)
-            allowUpdates = true;
+            StartCoroutine("MyObjects");
         else
             StartCoroutine("InitialLoad");
+    }
+
+    IEnumerator MyObjects()
+    {
+        yield return new WaitForSeconds(.1f);
+        BloidData newData = InitialData();
+        if (newData.objectId >= 0)
+        {
+            GameObject dorkus = Instantiate(boid, new Vector3(newData.x, newData.y, newData.z), Quaternion.identity);
+            dorkus.GetComponent<BoidBehavior>().objId = newData.objectId;
+            dorkus.GetComponent<Renderer>().material.color = Color.red;
+            bloidList1.Add(dorkus);
+            bloidList2.Add(dorkus);
+            StartCoroutine("MyObjects");
+        }
+        else if (newData.objectId == -1)
+            allowUpdates = true;
+        else
+            StartCoroutine("MyObjects");
     }
     
 }

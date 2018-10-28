@@ -39,7 +39,7 @@ enum GameMessages
 	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1,
 	ID_GAME_MESSAGE_2 = ID_USER_PACKET_ENUM + 2,
 	ID_GAME_MESSAGE_3 = ID_USER_PACKET_ENUM + 3,
-	ID_GAME_MESSAGE_4 = ID_USER_PACKET_ENUM + 4 // end init message;
+	ID_GAME_MESSAGE_4 = ID_USER_PACKET_ENUM + 4 // recieve client boids
 };
 
 
@@ -72,7 +72,7 @@ using namespace RakNet;
 
 int main(void)
 {
-	const float SERVER_UPDATE = 33;
+	const float SERVER_UPDATE = 100;
 	std::vector <Bloid> bloids;
 	std::vector <RakNet::RakNetGUID> IDsToUpdate;
 
@@ -81,6 +81,7 @@ int main(void)
 	BloidMessage myBloidMessage[1];
 
 	unsigned int maxClients; 
+	unsigned int serverType;
 	unsigned short serverPort = 1111;
 
 	char str[512];
@@ -98,6 +99,14 @@ int main(void)
 
 	maxClients = (unsigned short) strtoul(str, NULL, 0);
 
+	printf("Please enter the type of server (1 = push, 2 = share, 3 = couple)\n");
+	fgets(str, 512, stdin);
+	serverType = (unsigned short)strtoul(str, NULL, 0);
+	if (serverType > 3 || serverType < 1)
+	{
+		serverType = 1;
+	}
+
 	//modified with local variables
 	SocketDescriptor sd(serverPort, 0);
 	peer->Startup(maxClients, &sd, 1);
@@ -106,16 +115,19 @@ int main(void)
 	// We need to let the server accept incoming connections from the clients
 	peer->SetMaximumIncomingConnections(maxClients); //modified with local variables
 
-	for (int bl = 0; bl < 4; ++bl)
-	{
-		Bloid newBloid(bl, 0, 0, 0, -1, RakNet::GetTime());
-		newBloid.setBloidDirection();
-
-		bloids.push_back(newBloid);
-	}
-
 	timePrev = RakNet::GetTimeMS();
 	timeServerUpdate = RakNet::GetTimeMS();
+
+	if (serverType == 1)
+	{
+		for (int bl = 0; bl < 4; ++bl)
+		{
+			Bloid newBloid(bl, 0, 0, 0, -1, RakNet::GetTime());
+			newBloid.setBloidDirection();
+
+			bloids.push_back(newBloid);
+		}
+	}
 
 	while (1)
 	{
@@ -134,39 +146,59 @@ int main(void)
 			case ID_REMOTE_NEW_INCOMING_CONNECTION:
 				printf("Another client has connected.\n");
 				break;
-			case ID_CONNECTION_REQUEST_ACCEPTED:
-			{
-				printf("Our connection request has been accepted.\n");
-
-
-
-				strncpy(myModifyMessage->messageStr, "Hello world", sizeof(myModifyMessage->messageStr));
-				myModifyMessage->typeId = ID_GAME_MESSAGE_1;
-				peer->Send((char*)myModifyMessage, sizeof(customMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
-			}
 			break;
 			case ID_NEW_INCOMING_CONNECTION:
 			{
 				printf("A connection is incoming.\n");
 				myBloidMessage->typeID = ID_GAME_MESSAGE_2;
-
-				for (int i = 0; i < bloids.size(); ++i)
+				if (serverType == 1)
 				{
-					printf("ummmm");
-					myBloidMessage->objectId = bloids.at(i).objectId;
-					myBloidMessage->x = bloids.at(i).x;
-					myBloidMessage->y = bloids.at(i).y;
-					myBloidMessage->z = bloids.at(i).z;
-					myBloidMessage->direction = bloids.at(i).direction;
-					peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+					for (int i = 0; i < bloids.size(); ++i)
+					{
+						myBloidMessage->objectId = bloids.at(i).objectId;
+						myBloidMessage->x = bloids.at(i).x;
+						myBloidMessage->y = bloids.at(i).y;
+						myBloidMessage->z = bloids.at(i).z;
+						myBloidMessage->direction = bloids.at(i).direction;
+						peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+					}
+				}
+				else if (serverType == 2)
+				{
+					for (int i = 0; i < bloids.size(); ++i)
+					{
+						myBloidMessage->objectId = bloids.at(i).objectId;
+						myBloidMessage->x = bloids.at(i).x;
+						myBloidMessage->y = bloids.at(i).y;
+						myBloidMessage->z = bloids.at(i).z;
+						myBloidMessage->direction = bloids.at(i).direction;
+						peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+					}
+					myModifyMessage->typeId = ID_GAME_MESSAGE_3;
+					peer->Send((char*)myModifyMessage, sizeof(customMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+
+					for (int i = 0; i < 4; ++i)
+					{
+						Bloid newBloid(bloids.size(), 0, 0, 0, -1, RakNet::GetTime());
+						newBloid.setBloidDirection();
+
+						bloids.push_back(newBloid);
+
+						myBloidMessage->objectId = newBloid.objectId;
+						myBloidMessage->x = newBloid.x;
+						myBloidMessage->y = newBloid.y;
+						myBloidMessage->z = newBloid.z;
+						myBloidMessage->direction = newBloid.direction;
+						peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+					}
+					myModifyMessage->typeId = ID_GAME_MESSAGE_3;
+					peer->Send((char*)myModifyMessage, sizeof(customMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+				}
+				else 
+				{
+
 				}
 				myBloidMessage->typeID = ID_GAME_MESSAGE_1;
-
-				//myBloidMessage->typeID = ID_GAME_MESSAGE_3;
-				//peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
-				//myBloidMessage->typeID = ID_GAME_MESSAGE_1;
-
-				//strncpy(myModifyMessage->messageStr, "testing testing 1 2 3", sizeof(myModifyMessage->messageStr));
 				myModifyMessage->typeId = ID_GAME_MESSAGE_3;
 				peer->Send((char*)myModifyMessage, sizeof(customMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 			}
@@ -199,6 +231,19 @@ int main(void)
 					customMessage *sentMessage = (customMessage *)packet->data;
 					printf("%s\n", sentMessage->messageStr);
 				}
+			break;
+			case ID_GAME_MESSAGE_4:
+			{
+				const BloidMessage *newBloidData = (BloidMessage *)packet->data;
+
+				myBloidMessage->objectId = newBloidData->objectId;
+				bloids.at(newBloidData->objectId).x = myBloidMessage->x = (bloids.at(newBloidData->objectId).x + newBloidData->x) * 0.5;
+				bloids.at(newBloidData->objectId).y = myBloidMessage->y = (bloids.at(newBloidData->objectId).y + newBloidData->y) * 0.5;
+				bloids.at(newBloidData->objectId).z = myBloidMessage->z = (bloids.at(newBloidData->objectId).z + newBloidData->z) * 0.5;
+				myBloidMessage->direction = bloids.at(newBloidData->objectId).direction;
+				
+				peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetMyGUID(), true);
+			}
 			break;
 			default:
 				printf("Message with identifier %i has arrived.\n", packet->data[0]);

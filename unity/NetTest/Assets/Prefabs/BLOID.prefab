@@ -112,9 +112,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   directionInt: 0
-  direction: {x: 0, y: 0, z: 0}
+  direction: 0
   directionEnd: {x: 0, y: 0, z: 0}
   objId: 0
   lerpTimer: 0
   maxLerpTimer: 0
   lerpValue: 0
+  moveInc: 5
