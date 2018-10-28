@@ -67,6 +67,8 @@ public class bloidSpawn : myDataStructs
     [DllImport("BoidEvents")]
     static extern BloidData Test();
 
+    [DllImport("BoidEvents")]
+    static extern BloidData InitialData();
 
     public GameObject boid;
 
@@ -77,13 +79,16 @@ public class bloidSpawn : myDataStructs
     public char[] ipAddressChar;
    
     public GameObject[] bloidList;
+    public List<GameObject> bloidList1;
     public bool found;
+    public bool allowUpdates;
 
 	// Use this for initialization
 	void Start ()
     {
         found = false;
         timer = maxTime;
+        allowUpdates = false;
         //BloidData var = Test();
         //
         //Debug.Log(var.objectId);
@@ -94,53 +99,47 @@ public class bloidSpawn : myDataStructs
 
         raknetPeer();
         connectToServer(ipAddress);
+        StartCoroutine("InitialLoad");
+        found = false;
     }
 
     // Update is called once per frame
     void Update ()
     {
-
-        //timer -= Time.deltaTime;
-        //sorry dan but yes im calling this in update, I know its expensive, invoice me later
-        bloidList = GameObject.FindGameObjectsWithTag("BLOID");
-
-        BloidData newData = receiveData();
-        if (newData.objectId < 6)
-            Debug.Log(newData.objectId);
-
-
-        if (newData.objectId >= 0)
+        if (allowUpdates)
         {
-            
-            for (int i = 0; i < bloidList.Length; i++)
+            BloidData newData = receiveData();
+            if (newData.objectId >= 0)
             {
-                if (bloidList[i].GetComponent<BoidBehavior>().objId == newData.objectId)
+                for (int i = 0; i < bloidList1.Count && !found; i++)
                 {
-                    found = true;
-                }
-            }
-            if (!found)
-            {
-                Debug.Log("Created");
-                //create new BLOID            
-                GameObject dorkus = Instantiate(boid, new Vector3(newData.x, newData.y, newData.z), Quaternion.identity);
-                dorkus.GetComponent<BoidBehavior>().objId = newData.objectId;
-                //dorkus.GetComponent<BoidBehavior>().changeDirection(newData.direction);
-                found = false;
-            }
-            else
-            {
-                //get
-                for (int i = 0; i < bloidList.Length; i++)
-                {
-                    if (bloidList[i].GetComponent<BoidBehavior>().objId == newData.objectId)
+                    if (bloidList1[i].GetComponent<BoidBehavior>().objId == newData.objectId)
                     {
-                        bloidList[i].GetComponent<BoidBehavior>().SendMessage("setPos", new Vector3(newData.x, newData.y, newData.z));
-                        //bloidList[i].GetComponent<BoidBehavior>().changeDirection(newData.direction);
+                        bloidList1[i].GetComponent<BoidBehavior>().SendMessage("setPos", new Vector3(newData.x, newData.y, newData.z));
+                        found = true;
                     }
                 }
+                found = false;
             }
-            
         }
     }
+
+    IEnumerator InitialLoad()
+    {
+        yield return new WaitForSeconds(.1f);
+        BloidData newData = InitialData();
+        if (newData.objectId >= 0)
+        {
+            GameObject dorkus = Instantiate(boid, new Vector3(newData.x, newData.y, newData.z), Quaternion.identity);
+            dorkus.GetComponent<BoidBehavior>().objId = newData.objectId;
+            bloidList1.Add(dorkus);
+            StartCoroutine("InitialLoad");
+        }
+        else if (newData.objectId == -1)
+            allowUpdates = true;
+        else
+            StartCoroutine("InitialLoad");
+    }
+    
 }
+

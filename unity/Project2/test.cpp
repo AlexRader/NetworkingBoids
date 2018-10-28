@@ -1,35 +1,6 @@
 
 #include "test.h"
 
-//#define BloidInfo// __declspec (dllexport)
-
-//#pragma pack(push, 1)
-//struct BloidMessage {
-//
-//	char typeID;
-//
-//	int objectId;
-//	float x, y, z;
-//	int direction;
-//
-//};
-//#pragma pack(pop)
-//
-//#pragma pack(push, 1)
-//struct BloidData {
-//
-//	int objectId;
-//	float x, y, z;
-//	int direction;
-//
-//};
-//#pragma pack(pop)
-enum GameMessages
-{
-	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1,
-	ID_GAME_MESSAGE_2 = ID_USER_PACKET_ENUM + 2,
-	ID_GAME_MESSAGE_3 = ID_USER_PACKET_ENUM + 3
-};
 
 //client plugin
 RakNet::RakPeerInterface *gpPeerInstance;// = RakNet::RakPeerInterface::GetInstance();
@@ -51,8 +22,6 @@ void connectToServer(char* ip)
 
 	strcpy(str, "216.93.149.120");
 
-	//RakNet::RakPeerInterface *peer = RakNet::RakPeerInterface::GetInstance();
-
 	gpPeerInstance->Connect(str, serverPort, 0, 0);
 
 }
@@ -60,21 +29,12 @@ void connectToServer(char* ip)
 //receive data
 BloidData receiveData()
 {
-	//RakNet::RakPeerInterface *peer = RakNet::RakPeerInterface::GetInstance();
 	RakNet::Packet *packet;
 
-	
-	//packet = gpPeerInstance->Receive();
 	for (packet = gpPeerInstance->Receive(); packet; gpPeerInstance->DeallocatePacket(packet), packet = gpPeerInstance->Receive())
 	{
 		switch (packet->data[0])
 		{
-		case ID_CONNECTION_REQUEST_ACCEPTED:
-		{
-			BloidData dat = Test();
-			return dat;
-		}
-			break;
 		case ID_GAME_MESSAGE_1:
 		{
 			const BloidMessage *newBloidData = (BloidMessage *)packet->data;
@@ -128,11 +88,63 @@ void kickRequest()
 BloidData Test()
 {
 	BloidData tester;
-	tester.objectId = 2;
+	tester.objectId = -2;
 	tester.direction = 2;
 	tester.x = 1;
 	tester.y = 3;
 	tester.z = 4;
 
 	return tester;
+}
+
+BloidData InitialData()
+{
+	RakNet::Packet *packet;
+
+	for (packet = gpPeerInstance->Receive(); packet; gpPeerInstance->DeallocatePacket(packet), packet = gpPeerInstance->Receive())
+	{
+		switch (packet->data[0])
+		{
+		case ID_CONNECTION_REQUEST_ACCEPTED:
+		{
+			BloidData dat = Test();
+			return dat;
+		}
+		break;
+		case ID_GAME_MESSAGE_2:
+		{
+			const BloidMessage *newBloidData = (BloidMessage *)packet->data;
+
+			BloidData newData;
+
+			newData.objectId = newBloidData->objectId;
+			newData.x = newBloidData->x;
+			newData.y = newBloidData->y;
+			newData.z = newBloidData->z;
+			newData.direction = newBloidData->direction;
+
+			return newData;
+		}
+		break;
+		case ID_GAME_MESSAGE_3:
+		{
+			const BloidMessage *newBloidData = (BloidMessage *)packet->data;
+			BloidData newData;
+
+			newData.objectId = -1;
+
+			return newData;
+		}
+		break;
+		default:
+		{
+			BloidData newData;
+
+			newData.objectId = -2;
+
+			return newData;
+		}
+		break;
+		}
+	}
 }

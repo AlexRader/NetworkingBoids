@@ -37,7 +37,12 @@ extern "C"
 ////		BloidMessage(char type, int id, float nX, float nY, float nZ, int nDir);
 //
 //	};
-
+enum GameMessages
+{
+	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1,
+	ID_GAME_MESSAGE_2 = ID_USER_PACKET_ENUM + 2,
+	ID_GAME_MESSAGE_3 = ID_USER_PACKET_ENUM + 3
+};
 #pragma pack(push, 1)
 struct BloidMessage {
 
@@ -62,6 +67,14 @@ struct BloidData {
 };
 #pragma pack(pop)
 
+#pragma pack(push, 1)
+struct customMessage
+{
+	GameMessages typeId = ID_GAME_MESSAGE_2;
+	char messageStr[512];
+};
+#pragma pack(pop)
+
 	//initialize 
 	BloidInfo void raknetPeer();
 
@@ -79,6 +92,9 @@ struct BloidData {
 
 	//Test
 	BloidInfo BloidData Test();
+
+	//intitialize bloids from server
+	BloidInfo BloidData InitialData();
 
 #ifdef __cplusplus
 }

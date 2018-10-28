@@ -38,7 +38,8 @@ enum GameMessages
 {
 	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1,
 	ID_GAME_MESSAGE_2 = ID_USER_PACKET_ENUM + 2,
-	ID_GAME_MESSAGE_3 = ID_USER_PACKET_ENUM + 3
+	ID_GAME_MESSAGE_3 = ID_USER_PACKET_ENUM + 3,
+	ID_GAME_MESSAGE_4 = ID_USER_PACKET_ENUM + 4 // end init message;
 };
 
 
@@ -147,11 +148,25 @@ int main(void)
 			case ID_NEW_INCOMING_CONNECTION:
 			{
 				printf("A connection is incoming.\n");
+				myBloidMessage->typeID = ID_GAME_MESSAGE_2;
+
 				for (int i = 0; i < bloids.size(); ++i)
 				{
+					printf("ummmm");
+					myBloidMessage->objectId = bloids.at(i).objectId;
+					myBloidMessage->x = bloids.at(i).x;
+					myBloidMessage->y = bloids.at(i).y;
+					myBloidMessage->z = bloids.at(i).z;
+					myBloidMessage->direction = bloids.at(i).direction;
 					peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 				}
-				strncpy(myModifyMessage->messageStr, "testing testing 1 2 3", sizeof(myModifyMessage->messageStr));
+				myBloidMessage->typeID = ID_GAME_MESSAGE_1;
+
+				//myBloidMessage->typeID = ID_GAME_MESSAGE_3;
+				//peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+				//myBloidMessage->typeID = ID_GAME_MESSAGE_1;
+
+				//strncpy(myModifyMessage->messageStr, "testing testing 1 2 3", sizeof(myModifyMessage->messageStr));
 				myModifyMessage->typeId = ID_GAME_MESSAGE_3;
 				peer->Send((char*)myModifyMessage, sizeof(customMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 			}
@@ -202,14 +217,14 @@ int main(void)
 				myBloidMessage->y = bloids.at(i).y;
 				myBloidMessage->z = bloids.at(i).z;
 				myBloidMessage->direction = bloids.at(i).direction;
-
+		
 				std::cout
 					<< "ID: "
 					<< myBloidMessage->objectId
 					<< " | DIRECTION: "
 					<< myBloidMessage->direction
 					<< " \n";
-
+		
 				peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 			}
 		}
@@ -227,14 +242,14 @@ int main(void)
 				myBloidMessage->y = bloids.at(i).y;
 				myBloidMessage->z = bloids.at(i).z;
 				myBloidMessage->direction = bloids.at(i).direction;
-
+		
 				std::cout
 					<< "ID: "
 					<< myBloidMessage->objectId
 					<< " | DIRECTION: "
 					<< myBloidMessage->direction
 					<< " \n";
-
+		
 				peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);			
 			}
 		}
