@@ -8,6 +8,8 @@ current date 10/3/2018
 may reproduce this project and provide copies to other academic staff, and/or
 communicate a copy of this project to a plagiarism-checking service, which may
 retain a copy of the project on its database.”
+
+This file was added to the project for access to an event and queue system
 */
 #include "Proj2Events.h"
 #include "Proj2Queue.h"

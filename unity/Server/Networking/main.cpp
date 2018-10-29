@@ -8,7 +8,7 @@
 /*
 the following file was modified by
 Alex Rader 1023256 Rosser Martinez 1020967
-EGP-405-01/02 Lab 3 | due 10/3/2018
+EGP-405-01/02 Project2 | due 10/29/2018
 current date 10/3/2018
 
 “We certify that this work is entirely our own. The assessor of this project
@@ -51,7 +51,7 @@ struct customMessage
 };
 #pragma pack(pop)
 
-
+// message to send to plugin
 #pragma pack(push, 1)
 struct BloidMessage 
 {
@@ -81,8 +81,8 @@ int main(void)
 	BloidMessage myBloidMessage[1];
 
 	unsigned int maxClients; 
-	unsigned int serverType;
-	unsigned short serverPort = 1111;
+	unsigned int serverType; //(Project2) sets if the server is push, shared or coupled
+	unsigned short serverPort = 1111; //(Project2) set this so it is relatively easy to connect between plugin and server
 
 	char str[512];
 	
@@ -99,6 +99,7 @@ int main(void)
 
 	maxClients = (unsigned short) strtoul(str, NULL, 0);
 
+	//(Project2) sets the servertype and assures that it is correct.
 	printf("Please enter the type of server (1 = push, 2 = share, 3 = couple)\n");
 	fgets(str, 512, stdin);
 	serverType = (unsigned short)strtoul(str, NULL, 0);
@@ -112,12 +113,13 @@ int main(void)
 	peer->Startup(maxClients, &sd, 1);
 
 	printf("Starting the server.\n");
-	// We need to let the server accept incoming connections from the clients
+	//We need to let the server accept incoming connections from the clients
 	peer->SetMaximumIncomingConnections(maxClients); //modified with local variables
 
 	timePrev = RakNet::GetTimeMS();
 	timeServerUpdate = RakNet::GetTimeMS();
 
+	//(Project2) initialize a few boids for pushing.
 	if (serverType == 1)
 	{
 		for (int bl = 0; bl < 4; ++bl)
@@ -147,10 +149,11 @@ int main(void)
 				printf("Another client has connected.\n");
 				break;
 			break;
-			case ID_NEW_INCOMING_CONNECTION:
+			case ID_NEW_INCOMING_CONNECTION: //(Project2) when a new person joins there is a few things to do
 			{
 				printf("A connection is incoming.\n");
-				myBloidMessage->typeID = ID_GAME_MESSAGE_2;
+				myBloidMessage->typeID = ID_GAME_MESSAGE_2; //(Project2) this is known to the plugin as a setting up bloids message
+				//(Project2) Relatively easy just spawn the bloids in the unity plugin for the push data
 				if (serverType == 1)
 				{
 					for (int i = 0; i < bloids.size(); ++i)
@@ -163,8 +166,10 @@ int main(void)
 						peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 					}
 				}
+				//(Project2)both share and coupled have similar setups (probably why coupled doesnt work)
 				else if (serverType >= 2)
 				{
+					//(Project2)spawns boids already known by the server
 					for (int i = 0; i < bloids.size(); ++i)
 					{
 						myBloidMessage->objectId = bloids.at(i).objectId;
@@ -174,9 +179,10 @@ int main(void)
 						myBloidMessage->direction = bloids.at(i).direction;
 						peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 					}
-					myModifyMessage->typeId = ID_GAME_MESSAGE_3;
+					myModifyMessage->typeId = ID_GAME_MESSAGE_3; // (Project2)known as an end of bloids list to the plugin
 					peer->Send((char*)myModifyMessage, sizeof(customMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 
+					//(Project2)spawns the locally controlled bloids and adds them to the list of bloids.
 					for (int i = 0; i < 4; ++i)
 					{
 						Bloid newBloid(bloids.size(), 0, 0, 0, -1, RakNet::GetTime());
@@ -193,7 +199,7 @@ int main(void)
 					}
 					myModifyMessage->typeId = ID_GAME_MESSAGE_3;
 					peer->Send((char*)myModifyMessage, sizeof(customMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
-					//this is really just a fix for coupling not spawning everyone
+					//(Project2) this is really just a fix for coupling not spawning everyone (well it works but not quite)
 					if (serverType == 3)
 					{
 						myBloidMessage->typeID = ID_GAME_MESSAGE_1;
@@ -211,7 +217,7 @@ int main(void)
 					}
 				}
 
-				myBloidMessage->typeID = ID_GAME_MESSAGE_1;
+				myBloidMessage->typeID = ID_GAME_MESSAGE_1; //(Project2) switch to running message sending 
 				myModifyMessage->typeId = ID_GAME_MESSAGE_3;
 				peer->Send((char*)myModifyMessage, sizeof(customMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 			}
@@ -245,35 +251,34 @@ int main(void)
 					printf("%s\n", sentMessage->messageStr);
 				}
 			break;
-			case ID_GAME_MESSAGE_4:
+			case ID_GAME_MESSAGE_4: //(Project2) so this is basically the sent from client message for share and couple
 			{
 				const BloidMessage *newBloidData = (BloidMessage *)packet->data;
-				char str1[10];
-				sprintf(str1, "%d", newBloidData->objectId);
-				printf("%s\n", str1);
+				//(Project2) testing for making sure data was being bassed through correctly
+				//char str1[10];
+				//sprintf(str1, "%d", newBloidData->objectId);
+				//printf("%s\n", str1);
+
 				//printf("%s\n", newBloidData->objectId);
 				myBloidMessage->objectId = newBloidData->objectId;
-				if (serverType == 2)
+				if (serverType == 2) //(Project2) if share we need to use a different method of movement than coupled
 				{
 					myBloidMessage->x = (bloids.at(newBloidData->objectId).x * newBloidData->x) * 0.5;
 					myBloidMessage->y = (bloids.at(newBloidData->objectId).y * newBloidData->y) * 0.5;
 					myBloidMessage->z = (bloids.at(newBloidData->objectId).z * newBloidData->z) * 0.5;
 				}
-				else
+				else //(Project2) coupled movement Note: one way coupled was explained to me was objects are tracked
+					//on client and sent through the server like a player controlled character
 				{
 					myBloidMessage->x = newBloidData->x;
 					myBloidMessage->y = newBloidData->y;
 					myBloidMessage->z = newBloidData->z;
 				}
 				myBloidMessage->direction = bloids.at(newBloidData->objectId).direction;
-				if (serverType == 2)
-				{
+				if (serverType == 2) //(Project2) send the update to everyone on server
 					peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
-				}
-				else
-				{
+				else // (Project2) send to everyone but client who sent the info
 					peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->guid, true);
-				}
 			}
 			break;
 			default:
@@ -281,9 +286,10 @@ int main(void)
 				break;
 			}
 		}
-		if (serverType == 2)
+		if (serverType <= 2) // (Project2) the update for data push and share
 		{
-			if (timeCurr - timeServerUpdate >= SERVER_UPDATE)
+			// (Project2) limits the server update rate, so the server isnt overloaded with messages.
+			if (timeCurr - timeServerUpdate >= SERVER_UPDATE) 
 			{
 				timeServerUpdate = timeCurr;
 				for (int i = 0; i < bloids.size(); ++i)
@@ -295,6 +301,7 @@ int main(void)
 					myBloidMessage->z = bloids.at(i).z;
 					myBloidMessage->direction = bloids.at(i).direction;
 
+					//(Project2) testing for id and direction
 					//std::cout
 					//	<< "ID: "
 					//	<< myBloidMessage->objectId
@@ -305,7 +312,7 @@ int main(void)
 					peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 				}
 			}
-			//spookiness at intervals of elapsed time
+			//(Project2) switch direction of travel.
 			if (timeCurr - timePrev >= 3000)
 			{
 				//this is where we update
