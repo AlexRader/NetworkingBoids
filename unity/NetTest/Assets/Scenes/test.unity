@@ -200,6 +200,7 @@ GameObject:
   - component: {fileID: 1619222713}
   - component: {fileID: 1619222712}
   - component: {fileID: 1619222714}
+  - component: {fileID: 1619222715}
   m_Layer: 0
   m_Name: bloidManager
   m_TagString: Untagged
@@ -252,12 +253,30 @@ MonoBehaviour:
   boid: {fileID: 1871488092101348, guid: 675aac3579080dd40b5cf8df297c805d, type: 2}
   ipAddress: 216.93.149.120
   ipAddressChar: 
-  bloidList: []
   bloidList1: []
   bloidList2: []
   found: 0
   allowUpdates: 0
-  localObject: {fileID: 0}
+--- !u!114 &1619222715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1619222711}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df8b359a88024ab41838e33c68f5272f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MAX_TIME: 3
+  boid: {fileID: 1871488092101348, guid: 675aac3579080dd40b5cf8df297c805d, type: 2}
+  ipAddress: 216.93.149.120
+  ipAddressChar: 
+  bloidList1: []
+  bloidList2: []
+  found: 0
+  allowUpdates: 0
+  timer: 0
 --- !u!1 &1697654445
 GameObject:
   m_ObjectHideFlags: 0

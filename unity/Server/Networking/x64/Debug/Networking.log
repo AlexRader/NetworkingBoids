@@ -9,12 +9,11 @@ e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.
 e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(153): warning C4309: '=': truncation of constant value
 e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(182): warning C4244: 'argument': conversion from 'RakNet::Time' to 'float', possible loss of data
 e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(182): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(201): warning C4305: '=': truncation from 'GameMessages' to 'char'
-e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(201): warning C4309: '=': truncation of constant value
-e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(240): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(241): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(242): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(259): warning C4244: 'argument': conversion from 'RakNet::Time' to 'float', possible loss of data
-e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(281): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(302): warning C4244: '=': conversion from 'RakNet::TimeMS' to 'float', possible loss of data
+e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(197): warning C4305: '=': truncation from 'GameMessages' to 'char'
+e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(197): warning C4309: '=': truncation of constant value
+e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(241): warning C4305: '=': truncation from 'GameMessages' to 'char'
+e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(241): warning C4309: '=': truncation of constant value
+e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(315): warning C4244: 'argument': conversion from 'RakNet::Time' to 'float', possible loss of data
+e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(337): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+e:\finalyearfolder\networkingclass\networkingboids\unity\server\networking\main.cpp(358): warning C4244: '=': conversion from 'RakNet::TimeMS' to 'float', possible loss of data
   Networking.vcxproj -> E:\FinalYearFolder\NetworkingClass\NetworkingBoids\unity\Server\x64\Debug\Networking.exe

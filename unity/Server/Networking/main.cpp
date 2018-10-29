@@ -163,7 +163,7 @@ int main(void)
 						peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 					}
 				}
-				else if (serverType == 2)
+				else if (serverType >= 2)
 				{
 					for (int i = 0; i < bloids.size(); ++i)
 					{
@@ -193,11 +193,51 @@ int main(void)
 					}
 					myModifyMessage->typeId = ID_GAME_MESSAGE_3;
 					peer->Send((char*)myModifyMessage, sizeof(customMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
-				}
-				else 
-				{
+					//this is really just a fix for coupling not spawning everyone
+					myBloidMessage->typeID = ID_GAME_MESSAGE_1;
 
+					for (int i = 0; i < bloids.size(); ++i)
+					{
+						
+						myBloidMessage->objectId = bloids.at(i).objectId;
+						myBloidMessage->x = bloids.at(i).x;
+						myBloidMessage->y = bloids.at(i).y;
+						myBloidMessage->z = bloids.at(i).z;
+						myBloidMessage->direction = bloids.at(i).direction;
+						peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+					}
 				}
+				//else 
+				//{
+				//	for (int i = 0; i < bloids.size(); ++i)
+				//	{
+				//		myBloidMessage->objectId = bloids.at(i).objectId;
+				//		myBloidMessage->x = bloids.at(i).x;
+				//		myBloidMessage->y = bloids.at(i).y;
+				//		myBloidMessage->z = bloids.at(i).z;
+				//		myBloidMessage->direction = bloids.at(i).direction;
+				//		peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+				//	}
+				//	myModifyMessage->typeId = ID_GAME_MESSAGE_3;
+				//	peer->Send((char*)myModifyMessage, sizeof(customMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+				//
+				//	for (int i = 0; i < 4; ++i)
+				//	{
+				//		Bloid newBloid(bloids.size(), 0, 0, 0, -1, RakNet::GetTime());
+				//		newBloid.setBloidDirection();
+				//
+				//		bloids.push_back(newBloid);
+				//
+				//		myBloidMessage->objectId = newBloid.objectId;
+				//		myBloidMessage->x = newBloid.x;
+				//		myBloidMessage->y = newBloid.y;
+				//		myBloidMessage->z = newBloid.z;
+				//		myBloidMessage->direction = newBloid.direction;
+				//		peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+				//	}
+				//	myModifyMessage->typeId = ID_GAME_MESSAGE_3;
+				//	peer->Send((char*)myModifyMessage, sizeof(customMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+				//}
 				myBloidMessage->typeID = ID_GAME_MESSAGE_1;
 				myModifyMessage->typeId = ID_GAME_MESSAGE_3;
 				peer->Send((char*)myModifyMessage, sizeof(customMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
@@ -237,12 +277,27 @@ int main(void)
 				const BloidMessage *newBloidData = (BloidMessage *)packet->data;
 
 				myBloidMessage->objectId = newBloidData->objectId;
-				bloids.at(newBloidData->objectId).x = myBloidMessage->x = (bloids.at(newBloidData->objectId).x + newBloidData->x) * 0.5;
-				bloids.at(newBloidData->objectId).y = myBloidMessage->y = (bloids.at(newBloidData->objectId).y + newBloidData->y) * 0.5;
-				bloids.at(newBloidData->objectId).z = myBloidMessage->z = (bloids.at(newBloidData->objectId).z + newBloidData->z) * 0.5;
+				if (serverType == 2)
+				{
+					myBloidMessage->x = bloids.at(newBloidData->objectId).x;//(bloids.at(newBloidData->objectId).x * newBloidData->x) * 0.5;
+					myBloidMessage->y = bloids.at(newBloidData->objectId).y;//(bloids.at(newBloidData->objectId).y * newBloidData->y) * 0.5;
+					myBloidMessage->z = bloids.at(newBloidData->objectId).z;//(bloids.at(newBloidData->objectId).z * newBloidData->z) * 0.5;
+				}
+				else
+				{
+					myBloidMessage->x = newBloidData->x;
+					myBloidMessage->y = newBloidData->y;
+					myBloidMessage->z = newBloidData->z;
+				}
 				myBloidMessage->direction = bloids.at(newBloidData->objectId).direction;
-				
-				peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetMyGUID(), true);
+				if (serverType == 2)
+				{
+					peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+				}
+				else
+				{
+					peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->guid, true);
+				}
 			}
 			break;
 			default:
@@ -250,56 +305,58 @@ int main(void)
 				break;
 			}
 		}
-
-		if (timeCurr - timeServerUpdate >= SERVER_UPDATE)
+		if (serverType == 2)
 		{
-			timeServerUpdate = timeCurr;
-			for (int i = 0; i < bloids.size(); ++i)
+			if (timeCurr - timeServerUpdate >= SERVER_UPDATE)
 			{
-				bloids.at(i).updateBloid(RakNet::GetTime());
-				myBloidMessage->objectId = bloids.at(i).objectId;
-				myBloidMessage->x = bloids.at(i).x;
-				myBloidMessage->y = bloids.at(i).y;
-				myBloidMessage->z = bloids.at(i).z;
-				myBloidMessage->direction = bloids.at(i).direction;
-		
-				std::cout
-					<< "ID: "
-					<< myBloidMessage->objectId
-					<< " | DIRECTION: "
-					<< myBloidMessage->direction
-					<< " \n";
-		
-				peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
-			}
-		}
-		//spookiness at intervals of elapsed time
-		if (timeCurr - timePrev  >= 3000)
-		{
-			//this is where we update
-			timePrev = timeCurr;
-			srand(time(unsigned(NULL)));
-			for (int i = 0; i < bloids.size(); ++i)
-			{
-				bloids.at(i).setBloidDirection();
-				myBloidMessage->objectId = bloids.at(i).objectId;
-				myBloidMessage->x = bloids.at(i).x;
-				myBloidMessage->y = bloids.at(i).y;
-				myBloidMessage->z = bloids.at(i).z;
-				myBloidMessage->direction = bloids.at(i).direction;
-		
-				std::cout
-					<< "ID: "
-					<< myBloidMessage->objectId
-					<< " | DIRECTION: "
-					<< myBloidMessage->direction
-					<< " \n";
-		
-				peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);			
-			}
-		}
+				timeServerUpdate = timeCurr;
+				for (int i = 0; i < bloids.size(); ++i)
+				{
+					bloids.at(i).updateBloid(RakNet::GetTime());
+					myBloidMessage->objectId = bloids.at(i).objectId;
+					myBloidMessage->x = bloids.at(i).x;
+					myBloidMessage->y = bloids.at(i).y;
+					myBloidMessage->z = bloids.at(i).z;
+					myBloidMessage->direction = bloids.at(i).direction;
 
-		timeCurr = RakNet::GetTimeMS();
+					std::cout
+						<< "ID: "
+						<< myBloidMessage->objectId
+						<< " | DIRECTION: "
+						<< myBloidMessage->direction
+						<< " \n";
+
+					peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+				}
+			}
+			//spookiness at intervals of elapsed time
+			if (timeCurr - timePrev >= 3000)
+			{
+				//this is where we update
+				timePrev = timeCurr;
+				srand(time(unsigned(NULL)));
+				for (int i = 0; i < bloids.size(); ++i)
+				{
+					bloids.at(i).setBloidDirection();
+					myBloidMessage->objectId = bloids.at(i).objectId;
+					myBloidMessage->x = bloids.at(i).x;
+					myBloidMessage->y = bloids.at(i).y;
+					myBloidMessage->z = bloids.at(i).z;
+					myBloidMessage->direction = bloids.at(i).direction;
+
+					std::cout
+						<< "ID: "
+						<< myBloidMessage->objectId
+						<< " | DIRECTION: "
+						<< myBloidMessage->direction
+						<< " \n";
+
+					peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+				}
+			}
+
+			timeCurr = RakNet::GetTimeMS();
+		}
 	}
 
 	RakNet::RakPeerInterface::DestroyInstance(peer);

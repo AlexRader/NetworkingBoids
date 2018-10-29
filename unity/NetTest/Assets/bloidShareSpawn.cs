@@ -11,25 +11,18 @@ public class bloidShareSpawn : myDataStructs
     public string ipAddress;
     public char[] ipAddressChar;
    
-    public GameObject[] bloidList;
     public List<GameObject> bloidList1; // all objects
     public List<GameObject> bloidList2; // my objects to update locally 
     public bool found;
     public bool allowUpdates;
-    public Material localObject;
+    BoidBehavior currentObj;
+    Vector3 currObjTrans;
 
-	// Use this for initialization
-	void Start ()
+    // Use this for initialization
+    void Start ()
     {
         found = false;
         allowUpdates = false;
-        //BloidData var = Test();
-        //
-        //Debug.Log(var.objectId);
-        //Debug.Log(var.direction);
-        //Debug.Log(var.x);
-        //Debug.Log(var.y);
-        //Debug.Log(var.z);
 
         raknetPeer();
         connectToServer(ipAddress);
@@ -44,7 +37,10 @@ public class bloidShareSpawn : myDataStructs
         {
             for (int i = 0; i < bloidList2.Count; ++i)
             {
-                bloidList2[i].GetComponent<BoidBehavior>().SendMessage("simulatePos");
+                currentObj = bloidList2[i].GetComponent<BoidBehavior>();
+                currObjTrans = bloidList2[i].transform.position;
+                currentObj.SendMessage("simulatePos");
+                sendData(currentObj.objId, currObjTrans.x, currObjTrans.y, currObjTrans.z, currentObj.direction);
             }
             BloidData newData = receiveData();
             if (newData.objectId >= 0)
@@ -58,7 +54,7 @@ public class bloidShareSpawn : myDataStructs
                         found = true;
                     }
                 }
-                if (!found)
+                if (!found && newData.objectId <= 10000)
                 {
                     GameObject dorkus = Instantiate(boid, new Vector3(newData.x, newData.y, newData.z), Quaternion.identity);
                     dorkus.GetComponent<BoidBehavior>().objId = newData.objectId;
