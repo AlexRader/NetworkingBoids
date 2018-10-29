@@ -279,9 +279,9 @@ int main(void)
 				myBloidMessage->objectId = newBloidData->objectId;
 				if (serverType == 2)
 				{
-					myBloidMessage->x = bloids.at(newBloidData->objectId).x;//(bloids.at(newBloidData->objectId).x * newBloidData->x) * 0.5;
-					myBloidMessage->y = bloids.at(newBloidData->objectId).y;//(bloids.at(newBloidData->objectId).y * newBloidData->y) * 0.5;
-					myBloidMessage->z = bloids.at(newBloidData->objectId).z;//(bloids.at(newBloidData->objectId).z * newBloidData->z) * 0.5;
+					myBloidMessage->x = (bloids.at(newBloidData->objectId).x * newBloidData->x) * 0.5;
+					myBloidMessage->y = (bloids.at(newBloidData->objectId).y * newBloidData->y) * 0.5;
+					myBloidMessage->z = (bloids.at(newBloidData->objectId).z * newBloidData->z) * 0.5;
 				}
 				else
 				{

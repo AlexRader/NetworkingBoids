@@ -38,9 +38,7 @@ public class bloidShareSpawn : myDataStructs
             for (int i = 0; i < bloidList2.Count; ++i)
             {
                 currentObj = bloidList2[i].GetComponent<BoidBehavior>();
-                currObjTrans = bloidList2[i].transform.position;
                 currentObj.SendMessage("simulatePos");
-                sendData(currentObj.objId, currObjTrans.x, currObjTrans.y, currObjTrans.z, currentObj.direction);
             }
             BloidData newData = receiveData();
             if (newData.objectId >= 0)
@@ -96,9 +94,23 @@ public class bloidShareSpawn : myDataStructs
             StartCoroutine("MyObjects");
         }
         else if (newData.objectId == -1)
+        {
             allowUpdates = true;
+            StartCoroutine("SendData");
+        }
         else
             StartCoroutine("MyObjects");
+    }
+
+    IEnumerator SendData()
+    {
+        yield return new WaitForSeconds(.1f);
+        for (int i = 0; i < bloidList2.Count; ++i)
+        {
+            currentObj = bloidList2[i].GetComponent<BoidBehavior>();
+            currObjTrans = bloidList2[i].transform.position;
+            sendData(currentObj.objId, currObjTrans.x, currObjTrans.y, currObjTrans.z, currentObj.direction);
+        }
     }
     
 }
