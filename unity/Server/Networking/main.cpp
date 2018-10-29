@@ -194,50 +194,23 @@ int main(void)
 					myModifyMessage->typeId = ID_GAME_MESSAGE_3;
 					peer->Send((char*)myModifyMessage, sizeof(customMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 					//this is really just a fix for coupling not spawning everyone
-					myBloidMessage->typeID = ID_GAME_MESSAGE_1;
-
-					for (int i = 0; i < bloids.size(); ++i)
+					if (serverType == 3)
 					{
-						
-						myBloidMessage->objectId = bloids.at(i).objectId;
-						myBloidMessage->x = bloids.at(i).x;
-						myBloidMessage->y = bloids.at(i).y;
-						myBloidMessage->z = bloids.at(i).z;
-						myBloidMessage->direction = bloids.at(i).direction;
-						peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+						myBloidMessage->typeID = ID_GAME_MESSAGE_1;
+
+						for (int i = 0; i < bloids.size(); ++i)
+						{
+
+							myBloidMessage->objectId = bloids.at(i).objectId;
+							myBloidMessage->x = bloids.at(i).x;
+							myBloidMessage->y = bloids.at(i).y;
+							myBloidMessage->z = bloids.at(i).z;
+							myBloidMessage->direction = bloids.at(i).direction;
+							peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+						}
 					}
 				}
-				//else 
-				//{
-				//	for (int i = 0; i < bloids.size(); ++i)
-				//	{
-				//		myBloidMessage->objectId = bloids.at(i).objectId;
-				//		myBloidMessage->x = bloids.at(i).x;
-				//		myBloidMessage->y = bloids.at(i).y;
-				//		myBloidMessage->z = bloids.at(i).z;
-				//		myBloidMessage->direction = bloids.at(i).direction;
-				//		peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
-				//	}
-				//	myModifyMessage->typeId = ID_GAME_MESSAGE_3;
-				//	peer->Send((char*)myModifyMessage, sizeof(customMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
-				//
-				//	for (int i = 0; i < 4; ++i)
-				//	{
-				//		Bloid newBloid(bloids.size(), 0, 0, 0, -1, RakNet::GetTime());
-				//		newBloid.setBloidDirection();
-				//
-				//		bloids.push_back(newBloid);
-				//
-				//		myBloidMessage->objectId = newBloid.objectId;
-				//		myBloidMessage->x = newBloid.x;
-				//		myBloidMessage->y = newBloid.y;
-				//		myBloidMessage->z = newBloid.z;
-				//		myBloidMessage->direction = newBloid.direction;
-				//		peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
-				//	}
-				//	myModifyMessage->typeId = ID_GAME_MESSAGE_3;
-				//	peer->Send((char*)myModifyMessage, sizeof(customMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
-				//}
+
 				myBloidMessage->typeID = ID_GAME_MESSAGE_1;
 				myModifyMessage->typeId = ID_GAME_MESSAGE_3;
 				peer->Send((char*)myModifyMessage, sizeof(customMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
@@ -275,7 +248,10 @@ int main(void)
 			case ID_GAME_MESSAGE_4:
 			{
 				const BloidMessage *newBloidData = (BloidMessage *)packet->data;
-
+				char str1[10];
+				sprintf(str1, "%d", newBloidData->objectId);
+				printf("%s\n", str1);
+				//printf("%s\n", newBloidData->objectId);
 				myBloidMessage->objectId = newBloidData->objectId;
 				if (serverType == 2)
 				{
@@ -319,12 +295,12 @@ int main(void)
 					myBloidMessage->z = bloids.at(i).z;
 					myBloidMessage->direction = bloids.at(i).direction;
 
-					std::cout
-						<< "ID: "
-						<< myBloidMessage->objectId
-						<< " | DIRECTION: "
-						<< myBloidMessage->direction
-						<< " \n";
+					//std::cout
+					//	<< "ID: "
+					//	<< myBloidMessage->objectId
+					//	<< " | DIRECTION: "
+					//	<< myBloidMessage->direction
+					//	<< " \n";
 
 					peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 				}
@@ -344,12 +320,12 @@ int main(void)
 					myBloidMessage->z = bloids.at(i).z;
 					myBloidMessage->direction = bloids.at(i).direction;
 
-					std::cout
-						<< "ID: "
-						<< myBloidMessage->objectId
-						<< " | DIRECTION: "
-						<< myBloidMessage->direction
-						<< " \n";
+					//std::cout
+					//	<< "ID: "
+					//	<< myBloidMessage->objectId
+					//	<< " | DIRECTION: "
+					//	<< myBloidMessage->direction
+					//	<< " \n";
 
 					peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 				}
