@@ -6,15 +6,20 @@ using System.Runtime.InteropServices;
 
 public class bloidShareSpawn : myDataStructs
 {
+    [Tooltip("public reference to spawned boid or bloid in this case")]
     public GameObject boid;
-
+    [Tooltip("modifiable ip address so you can use this on diff computers")]
     public string ipAddress;
-    public char[] ipAddressChar;
-   
+    [Tooltip("list of the boids spawned here from server")]
     public List<GameObject> bloidList1; // all objects
+    [Tooltip("list of the boids spawned here from server that client can control")]
     public List<GameObject> bloidList2; // my objects to update locally 
+    [Tooltip("set true when boid was found")]
     public bool found;
+    [Tooltip("used to signal initial game state is loaded")]
     public bool allowUpdates;
+    //these are set so I gont have to constantly get component and position saves
+    //time especially component.
     BoidBehavior currentObj;
     Vector3 currObjTrans;
 
@@ -24,9 +29,9 @@ public class bloidShareSpawn : myDataStructs
         found = false;
         allowUpdates = false;
 
-        raknetPeer();
-        connectToServer(ipAddress);
-        StartCoroutine("InitialLoad");
+        raknetPeer();// initialize the connection
+        connectToServer(ipAddress); // connect to specified server
+        StartCoroutine("InitialLoad"); // this is where the server info will be loaded
         found = false;
     }
 
@@ -35,16 +40,19 @@ public class bloidShareSpawn : myDataStructs
     {
         if (allowUpdates)
         {
+            //updates my objects
             for (int i = 0; i < bloidList2.Count; ++i)
             {
                 currentObj = bloidList2[i].GetComponent<BoidBehavior>();
                 currentObj.SendMessage("simulatePos");
             }
             BloidData newData = receiveData();
+            //update all objects
             if (newData.objectId >= 0)
             {
                 for (int i = 0; i < bloidList1.Count && !found; i++)
                 {
+                    // find the object and update it
                     if (bloidList1[i].GetComponent<BoidBehavior>().objId == newData.objectId)
                     {
                         bloidList1[i].GetComponent<BoidBehavior>().SendMessage("setPos", new Vector3(newData.x, newData.y, newData.z));
@@ -52,6 +60,7 @@ public class bloidShareSpawn : myDataStructs
                         found = true;
                     }
                 }
+                // this was done for spawning events that never happened
                 if (!found && newData.objectId <= 10000)
                 {
                     GameObject dorkus = Instantiate(boid, new Vector3(newData.x, newData.y, newData.z), Quaternion.identity);
@@ -62,7 +71,7 @@ public class bloidShareSpawn : myDataStructs
             }
         }
     }
-
+    //loads sent server data for already spawned gameobjects.
     IEnumerator InitialLoad()
     {
         yield return new WaitForSeconds(.1f);
@@ -79,13 +88,14 @@ public class bloidShareSpawn : myDataStructs
         else
             StartCoroutine("InitialLoad");
     }
-
+    // these are my gameobjects
     IEnumerator MyObjects()
     {
         yield return new WaitForSeconds(.1f);
         BloidData newData = InitialData();
         if (newData.objectId >= 0)
         {
+            //spawn and track the object for updating
             GameObject dorkus = Instantiate(boid, new Vector3(newData.x, newData.y, newData.z), Quaternion.identity);
             dorkus.GetComponent<BoidBehavior>().objId = newData.objectId;
             dorkus.GetComponent<Renderer>().material.color = Color.red;
@@ -96,12 +106,12 @@ public class bloidShareSpawn : myDataStructs
         else if (newData.objectId == -1)
         {
             allowUpdates = true;
-            StartCoroutine("SendData");
+            StartCoroutine("SendData"); // this is here so send data is called
         }
         else
             StartCoroutine("MyObjects");
     }
-
+    //used to send data
     IEnumerator SendData()
     {
         yield return new WaitForSeconds(.1f);
@@ -111,6 +121,7 @@ public class bloidShareSpawn : myDataStructs
             currObjTrans = bloidList2[i].transform.position;
             sendData(currentObj.objId, currObjTrans.x, currObjTrans.y, currObjTrans.z, currentObj.direction);
         }
+        StartCoroutine("SendData"); // this is here so send data is called
     }
     
 }

@@ -1,3 +1,15 @@
+/*
+the following file was modified by
+Alex Rader 1023256 Rosser Martinez 1020967
+EGP-405-01/02 Project2 | due 10/29/2018
+current date 10/3/2018
+
+“We certify that this work is entirely our own. The assessor of this project
+may reproduce this project and provide copies to other academic staff, and/or
+communicate a copy of this project to a plagiarism-checking service, which may
+retain a copy of the project on its database.”
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h> // needed for strlen
@@ -7,6 +19,7 @@
 #include "RakNet/RakNetTypes.h"  // MessageID // include changed to correct directory
 #include <iostream>
 
+// (Project2) this is to check for importing or exporting of files
 #ifdef BLOID_EXPORT
 #define BloidInfo __declspec (dllexport)
 #else
@@ -20,23 +33,12 @@
 #endif
 
 
-//client plugin
+//(Project2) client plugin
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-//	struct BloidMessage {
-//
-//		unsigned char typeID;
-//
-//		int objectId;
-//		float x, y, z;
-//		int direction;
-//
-////		BloidMessage();
-////		BloidMessage(char type, int id, float nX, float nY, float nZ, int nDir);
-//
-//	};
+//(Project2)
 enum GameMessages
 {
 	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1, // for packets sent usually 
@@ -45,6 +47,7 @@ enum GameMessages
 	ID_GAME_MESSAGE_4 = ID_USER_PACKET_ENUM + 4	 // send client boids
 };
 #pragma pack(push, 1)
+//(Project2) the sent bloid over network
 struct BloidMessage {
 
 	char typeID;
@@ -55,7 +58,7 @@ struct BloidMessage {
 
 };
 #pragma pack(pop)
-
+//(Project2) the incomming data to be used by unity
 #pragma pack(push, 1)
 struct BloidData {
 
@@ -77,25 +80,25 @@ struct customMessage
 #pragma pack(pop)
 
 
-	//initialize 
+	//initialize (Project2)
 	BloidInfo void raknetPeer();
 
-	//connect
+	//connect(Project2)
 	BloidInfo void connectToServer(char* ip);
 
-	//receive data
+	//receive data (Project2)
 	BloidInfo BloidData receiveData();
 
-	//send data back to server
+	//send data back to server (Project2)
 	BloidInfo void sendData(int id, float x, float y, float z, int dir);
 
-	//disconnect
+	//disconnect (Project2)
 	BloidInfo void kickRequest();
 
-	//Test
+	//Test (Project2)
 	BloidInfo BloidData Test();
 
-	//intitialize bloids from server
+	//intitialize bloids from server (Project2)
 	BloidInfo BloidData InitialData();
 
 #ifdef __cplusplus

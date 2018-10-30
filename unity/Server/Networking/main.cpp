@@ -263,9 +263,9 @@ int main(void)
 				myBloidMessage->objectId = newBloidData->objectId;
 				if (serverType == 2) //(Project2) if share we need to use a different method of movement than coupled
 				{
-					myBloidMessage->x = (bloids.at(newBloidData->objectId).x * newBloidData->x) * 0.5;
-					myBloidMessage->y = (bloids.at(newBloidData->objectId).y * newBloidData->y) * 0.5;
-					myBloidMessage->z = (bloids.at(newBloidData->objectId).z * newBloidData->z) * 0.5;
+					myBloidMessage->x = bloids.at(newBloidData->objectId).x;
+					myBloidMessage->y = bloids.at(newBloidData->objectId).y;
+					myBloidMessage->z = bloids.at(newBloidData->objectId).z;
 				}
 				else //(Project2) coupled movement Note: one way coupled was explained to me was objects are tracked
 					//on client and sent through the server like a player controlled character

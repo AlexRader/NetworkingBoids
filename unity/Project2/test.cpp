@@ -1,10 +1,18 @@
+/*
+the following file was modified by
+Alex Rader 1023256 Rosser Martinez 1020967
+EGP-405-01/02 Project2 | due 10/29/2018
+current date 10/3/2018
 
+“We certify that this work is entirely our own. The assessor of this project
+may reproduce this project and provide copies to other academic staff, and/or
+communicate a copy of this project to a plagiarism-checking service, which may
+retain a copy of the project on its database.”
+*/
 #include "test.h"
-
 
 //client plugin
 RakNet::RakPeerInterface *gpPeerInstance;// = RakNet::RakPeerInterface::GetInstance();
-RakNet::RakNetGUID hostID;
 
 void raknetPeer()
 {
@@ -26,7 +34,7 @@ void connectToServer(char* ip)
 
 }
 
-//receive data
+//receive data (Project2)
 BloidData receiveData()
 {
 	RakNet::Packet *packet;
@@ -62,7 +70,7 @@ BloidData receiveData()
 }
 
 
-	//send data back to server
+	//send data back to server (Project2)
 void sendData(int id, float x, float y, float z, int dir)
 {
 
@@ -77,7 +85,7 @@ void sendData(int id, float x, float y, float z, int dir)
 	bloid.z = z;
 	bloid.direction = dir;
 
-	gpPeerInstance->Send((char *)&bloid, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, hostID, false);
+	gpPeerInstance->Send((char *)&bloid, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, gpPeerInstance->GetSystemAddressFromIndex(0), false);
 
 }
 
@@ -85,7 +93,8 @@ void kickRequest()
 {
 	return;
 }
-
+// (Project2) unit test for checking if bloids data was being sent by server/ recieve correctly
+// it wasnt, fixed error, i cried with tears of joy
 BloidData Test()
 {
 	BloidData tester;
@@ -97,7 +106,7 @@ BloidData Test()
 
 	return tester;
 }
-
+// (Project2) data sent by the server on start up, will be used by unity to get propper initial state
 BloidData InitialData()
 {
 	RakNet::Packet *packet;
@@ -108,7 +117,6 @@ BloidData InitialData()
 		{
 		case ID_CONNECTION_REQUEST_ACCEPTED:
 		{
-			hostID = packet->guid;
 			BloidData dat = Test();
 			return dat;
 		}

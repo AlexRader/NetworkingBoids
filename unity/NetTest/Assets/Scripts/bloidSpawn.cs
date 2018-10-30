@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Runtime.InteropServices;
 //using System;
 
-
+//this struct is basically the same as the pugin so info can be transfered
 struct BloidMessage
 {
     byte typeID;
@@ -14,17 +14,20 @@ struct BloidMessage
     public int direction;
 
 };
+//script is used for handling a data push server
 public class bloidSpawn : myDataStructs
 {
-
+    [Tooltip("public reference to spawned boid or bloid in this case")]
     public GameObject boid;
-
+    [Tooltip("modifiable ip address so you can use this on diff computers")]
     public string ipAddress;
-    public char[] ipAddressChar;
-   
-    public GameObject[] bloidList;
+
+    [Tooltip("list of the boids spawned here from server")]
     public List<GameObject> bloidList1;
+
+    [Tooltip("set true when boid was found")]
     public bool found;
+    [Tooltip("used to signal initial game state is loaded")]
     public bool allowUpdates;
 
 	// Use this for initialization
@@ -32,23 +35,17 @@ public class bloidSpawn : myDataStructs
     {
         found = false;
         allowUpdates = false;
-        //BloidData var = Test();
-        //
-        //Debug.Log(var.objectId);
-        //Debug.Log(var.direction);
-        //Debug.Log(var.x);
-        //Debug.Log(var.y);
-        //Debug.Log(var.z);
 
-        raknetPeer();
-        connectToServer(ipAddress);
-        StartCoroutine("InitialLoad");
+        raknetPeer(); // initialize the connection
+        connectToServer(ipAddress); // connect to specified server
+        StartCoroutine("InitialLoad"); // this is where the server info will be loaded
         found = false;
     }
 
     // Update is called once per frame
     void Update ()
     {
+        //just gets the update from the server. and updates boids
         if (allowUpdates)
         {
             BloidData newData = receiveData();
@@ -56,6 +53,7 @@ public class bloidSpawn : myDataStructs
             {
                 for (int i = 0; i < bloidList1.Count && !found; i++)
                 {
+                    // find the object and update it
                     if (bloidList1[i].GetComponent<BoidBehavior>().objId == newData.objectId)
                     {
                         bloidList1[i].GetComponent<BoidBehavior>().SendMessage("setPos", new Vector3(newData.x, newData.y, newData.z));
@@ -66,10 +64,10 @@ public class bloidSpawn : myDataStructs
             }
         }
     }
-
+    //loads sent server data.
     IEnumerator InitialLoad()
     {
-        yield return new WaitForSeconds(.1f);
+        yield return new WaitForSeconds(.1f); // this is so we dont have data overload
         BloidData newData = InitialData();
         if (newData.objectId >= 0)
         {

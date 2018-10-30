@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Runtime.InteropServices;
 
+//the unity plugin communication need to do some fancy shit to make data transfer
 public class myDataStructs : MonoBehaviour
 {
+    //makes the bloid data be consistant here and useable
     [StructLayout(LayoutKind.Sequential, Size = 20), System.Serializable]
     public struct BloidData
     {
@@ -20,6 +22,7 @@ public class myDataStructs : MonoBehaviour
         public int direction;
 
     };
+    // importing functions
     [DllImport("BoidEvents")]
     public static extern void raknetPeer();
 
