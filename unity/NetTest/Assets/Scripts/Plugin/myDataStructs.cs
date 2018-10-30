@@ -6,6 +6,15 @@ using System.Runtime.InteropServices;
 //the unity plugin communication need to do some fancy shit to make data transfer
 public class myDataStructs : MonoBehaviour
 {
+    struct BloidMessage
+    {
+        byte typeID;
+
+        public int objectId;
+        public float x, y, z;
+        public int direction;
+
+    };
     //makes the bloid data be consistant here and useable
     [StructLayout(LayoutKind.Sequential, Size = 20), System.Serializable]
     public struct BloidData

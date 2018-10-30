@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Runtime.InteropServices;
+using UnityEngine.UI;
 
 /*
 the following file was modified by
@@ -21,7 +21,7 @@ public class bloidCoupledSpawn : myDataStructs
     public GameObject boid;
 
     [Tooltip("modifiable ip address so you can use this on diff computers")]
-    public string ipAddress;
+    public Text ipAddress;
 
     [Tooltip("list of the boids spawned here from server")]
     public List<GameObject> bloidList1;
@@ -44,7 +44,7 @@ public class bloidCoupledSpawn : myDataStructs
         allowUpdates = false;
 
         raknetPeer();// initialize the connection
-        connectToServer(ipAddress); // connect to specified server
+        connectToServer(ipAddress.text); // connect to specified server
         StartCoroutine("InitialLoad"); // this is where the server info will be loaded
         found = false;
         timer = MAX_TIME; // just for changing the direction of the object

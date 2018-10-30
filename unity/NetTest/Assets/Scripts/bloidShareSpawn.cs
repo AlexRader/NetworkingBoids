@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Runtime.InteropServices;
+using UnityEngine.UI;
 
 /*
 the following file was modified by
@@ -19,7 +19,7 @@ public class bloidShareSpawn : myDataStructs
     [Tooltip("public reference to spawned boid or bloid in this case")]
     public GameObject boid;
     [Tooltip("modifiable ip address so you can use this on diff computers")]
-    public string ipAddress;
+    public Text ipAddress;
     [Tooltip("list of the boids spawned here from server")]
     public List<GameObject> bloidList1; // all objects
     [Tooltip("list of the boids spawned here from server that client can control")]
@@ -40,7 +40,7 @@ public class bloidShareSpawn : myDataStructs
         allowUpdates = false;
 
         raknetPeer();// initialize the connection
-        connectToServer(ipAddress); // connect to specified server
+        connectToServer(ipAddress.text); // connect to specified server
         StartCoroutine("InitialLoad"); // this is where the server info will be loaded
         found = false;
     }

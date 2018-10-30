@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Runtime.InteropServices;
+using UnityEngine.UI;
 //using System;
 
 //this struct is basically the same as the pugin so info can be transfered
@@ -16,23 +16,14 @@ may reproduce this project and provide copies to other academic staff, and/or
 communicate a copy of this project to a plagiarism-checking service, which may
 retain a copy of the project on its database.”
 */
-struct BloidMessage
-{
-    byte typeID;
 
-    public int objectId;
-    public float x, y, z;
-    public int direction;
-
-};
 //script is used for handling a data push server
 public class bloidSpawn : myDataStructs
 {
     [Tooltip("public reference to spawned boid or bloid in this case")]
     public GameObject boid;
     [Tooltip("modifiable ip address so you can use this on diff computers")]
-    public string ipAddress;
-
+    public Text ipAddress;
     [Tooltip("list of the boids spawned here from server")]
     public List<GameObject> bloidList1;
 
@@ -48,7 +39,7 @@ public class bloidSpawn : myDataStructs
         allowUpdates = false;
 
         raknetPeer(); // initialize the connection
-        connectToServer(ipAddress); // connect to specified server
+        connectToServer(ipAddress.text); // connect to specified server
         StartCoroutine("InitialLoad"); // this is where the server info will be loaded
         found = false;
     }
