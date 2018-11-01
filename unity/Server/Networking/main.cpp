@@ -32,7 +32,6 @@ retain a copy of the project on its database.”
 #include "Proj2Events.h"
 #include "Proj2Queue.h"
 #include "Data.h"
-#include "BloidSerializer.h"
 
 enum GameMessages
 {
