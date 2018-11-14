@@ -52,6 +52,9 @@ struct BloidMessage {
 
 	char typeID;
 
+	unsigned char useTimeStamp = ID_TIMESTAMP; // Assign ID_TIMESTAMP to this
+	RakNet::Time timeStamp; // Put the system time in here returned by RakNet::GetTime() or some other method that returns a similar value
+
 	int objectId;
 	float x, y, z;
 	int direction;
@@ -63,6 +66,7 @@ struct BloidMessage {
 struct BloidData {
 
 	int objectId = -1;
+	float timeStamp = -1;
 	float x = 0;
 	float y = 0;
 	float z = 0;

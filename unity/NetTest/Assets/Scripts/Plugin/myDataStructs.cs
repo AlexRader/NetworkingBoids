@@ -13,7 +13,7 @@ public class myDataStructs : MonoBehaviour
         public int objectId;
         public float x, y, z;
         public int direction;
-
+        public float timeStamp;
     };
     //makes the bloid data be consistant here and useable
     [StructLayout(LayoutKind.Sequential, Size = 20), System.Serializable]
@@ -21,6 +21,8 @@ public class myDataStructs : MonoBehaviour
     {
         [MarshalAsAttribute(UnmanagedType.I4, SizeConst = 4)]
         public int objectId;
+        [MarshalAsAttribute(UnmanagedType.R4, SizeConst = 4)]
+        public float timeStamp;
         [MarshalAsAttribute(UnmanagedType.R4, SizeConst = 4)]
         public float x;
         [MarshalAsAttribute(UnmanagedType.R4, SizeConst = 4)]

@@ -33,13 +33,13 @@ retain a copy of the project on its database.”
 #include "Proj2Queue.h"
 #include "Data.h"
 
-enum GameMessages
-{
-	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1,
-	ID_GAME_MESSAGE_2 = ID_USER_PACKET_ENUM + 2,
-	ID_GAME_MESSAGE_3 = ID_USER_PACKET_ENUM + 3,
-	ID_GAME_MESSAGE_4 = ID_USER_PACKET_ENUM + 4 // recieve client boids
-};
+//enum GameMessages
+//{
+//	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1,
+//	ID_GAME_MESSAGE_2 = ID_USER_PACKET_ENUM + 2,
+//	ID_GAME_MESSAGE_3 = ID_USER_PACKET_ENUM + 3,
+//	ID_GAME_MESSAGE_4 = ID_USER_PACKET_ENUM + 4 // recieve client boids
+//};
 
 
 #pragma pack(push, 1)
@@ -52,18 +52,18 @@ struct customMessage
 
 // message to send to plugin
 #pragma pack(push, 1)
-struct BloidMessage 
-{
-	//GameMessages typeId = ID_GAME_MESSAGE_1;
-	char typeID = ID_GAME_MESSAGE_1;
-
-	//BloidData sentBloid;
-
-	int objectId;
-	float x, y, z;
-	int direction;
-
-};
+//struct BloidMessage 
+//{
+//	//GameMessages typeId = ID_GAME_MESSAGE_1;
+//	char typeID = ID_GAME_MESSAGE_1;
+//
+//	//BloidData sentBloid;
+//
+//	int objectId;
+//	float x, y, z;
+//	int direction;
+//
+//};
 #pragma pack(pop)
 
 // needed for RakNet Defined classes, and structs 
@@ -162,6 +162,7 @@ int main(void)
 						myBloidMessage->y = bloids.at(i).y;
 						myBloidMessage->z = bloids.at(i).z;
 						myBloidMessage->direction = bloids.at(i).direction;
+						myBloidMessage->timeStamp = RakNet::GetTimeMS();
 						peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 					}
 				}
@@ -176,6 +177,7 @@ int main(void)
 						myBloidMessage->y = bloids.at(i).y;
 						myBloidMessage->z = bloids.at(i).z;
 						myBloidMessage->direction = bloids.at(i).direction;
+						myBloidMessage->timeStamp = RakNet::GetTimeMS();
 						peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 					}
 					myModifyMessage->typeId = ID_GAME_MESSAGE_3; // (Project2)known as an end of bloids list to the plugin
@@ -194,6 +196,7 @@ int main(void)
 						myBloidMessage->y = newBloid.y;
 						myBloidMessage->z = newBloid.z;
 						myBloidMessage->direction = newBloid.direction;
+						myBloidMessage->timeStamp = RakNet::GetTimeMS();
 						peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 					}
 					myModifyMessage->typeId = ID_GAME_MESSAGE_3;
@@ -211,6 +214,7 @@ int main(void)
 							myBloidMessage->y = bloids.at(i).y;
 							myBloidMessage->z = bloids.at(i).z;
 							myBloidMessage->direction = bloids.at(i).direction;
+							myBloidMessage->timeStamp = RakNet::GetTimeMS();
 							peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 						}
 					}
@@ -274,6 +278,7 @@ int main(void)
 					myBloidMessage->z = newBloidData->z;
 				}
 				myBloidMessage->direction = bloids.at(newBloidData->objectId).direction;
+				myBloidMessage->timeStamp = RakNet::GetTimeMS();
 				if (serverType == 2) //(Project2) send the update to everyone on server
 					peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 				else // (Project2) send to everyone but client who sent the info
@@ -299,7 +304,7 @@ int main(void)
 					myBloidMessage->y = bloids.at(i).y;
 					myBloidMessage->z = bloids.at(i).z;
 					myBloidMessage->direction = bloids.at(i).direction;
-
+					myBloidMessage->timeStamp = RakNet::GetTimeMS();
 					//(Project2) testing for id and direction
 					//std::cout
 					//	<< "ID: "
@@ -325,7 +330,7 @@ int main(void)
 					myBloidMessage->y = bloids.at(i).y;
 					myBloidMessage->z = bloids.at(i).z;
 					myBloidMessage->direction = bloids.at(i).direction;
-
+					myBloidMessage->timeStamp = RakNet::GetTimeMS();
 					//std::cout
 					//	<< "ID: "
 					//	<< myBloidMessage->objectId

@@ -23,11 +23,18 @@ public class BoidBehavior : myDataStructs {
 
     public float moveInc;
 
-	// Use this for initialization
-	void Start () {
+    public Vector3 velocity;
+    public Vector3 acceleration;
+
+    // Use this for initialization
+    void Start () {
         direction = 0;
         moveInc = 5;
-	}
+
+        velocity = Vector3.zero;
+        acceleration = new Vector3(5, 5, 5);
+
+    }
 	
 
     void setPos(Vector3 sentData)
@@ -38,29 +45,29 @@ public class BoidBehavior : myDataStructs {
     void simulatePos()
     {
         // y direction change
-       if (direction < 2 && direction >= 0)
+       if(direction < 2 && direction >= 0)
        {
-           if (0 == direction % 2)
-               transform.position = new Vector3(transform.position.x, transform.position.y + (moveInc * Time.deltaTime), transform.position.z);
-           else
-               transform.position = new Vector3(transform.position.x, transform.position.y - (moveInc * Time.deltaTime), transform.position.z);
-       }
+            if (0 == direction % 2)
+                transform.position = new Vector3(transform.position.x, transform.position.y + (acceleration.y * Time.deltaTime), transform.position.z);
+            else
+                transform.position = new Vector3(transform.position.x, transform.position.y - (acceleration.y * Time.deltaTime), transform.position.z);
+        }
         // x direction change
        else if (direction < 4)
         {
-           if (0 == direction % 2)
-               transform.position = new Vector3(transform.position.x + (moveInc * Time.deltaTime), transform.position.y, transform.position.z);
-           else
-               transform.position = new Vector3(transform.position.x - (moveInc * Time.deltaTime), transform.position.y, transform.position.z);
-       }
+            if (0 == direction % 2)
+                transform.position = new Vector3(transform.position.x + (acceleration.x * Time.deltaTime), transform.position.y, transform.position.z);
+            else
+                transform.position = new Vector3(transform.position.x - (acceleration.x * Time.deltaTime), transform.position.y, transform.position.z);
+        }
         // z direction change
         else
         {
-           if (0 == direction % 2)
-               transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + (moveInc * Time.deltaTime));
-           else
-               transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - (moveInc * Time.deltaTime));
-       }
+            if (0 == direction % 2)
+                transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + (acceleration.z * Time.deltaTime));
+            else
+                transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - (acceleration.z * Time.deltaTime));
+        }
     }
     //sets direction of the current bloid
     void SetDirection()

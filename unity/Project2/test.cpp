@@ -51,6 +51,7 @@ BloidData receiveData()
 			BloidData newData;
 
 			newData.objectId = newBloidData->objectId;
+			newData.timeStamp = newBloidData->timeStamp;
 			newData.x = newBloidData->x;
 			newData.y = newBloidData->y;
 			newData.z = newBloidData->z;
@@ -99,6 +100,7 @@ BloidData Test()
 {
 	BloidData tester;
 	tester.objectId = -2;
+	tester.timeStamp = -1;
 	tester.direction = 2;
 	tester.x = 1;
 	tester.y = 3;
@@ -128,6 +130,7 @@ BloidData InitialData()
 			BloidData newData;
 
 			newData.objectId = newBloidData->objectId;
+			newData.timeStamp = newBloidData->timeStamp;
 			newData.x = newBloidData->x;
 			newData.y = newBloidData->y;
 			newData.z = newBloidData->z;

@@ -13,6 +13,39 @@ retain a copy of the project on its database.”
 #ifndef DATA_H
 #define DATA_H
 #include "RakNet/GetTime.h"
+#include <vector>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>     
+#include <time.h>       
+#include <ctype.h> // needed for strlen
+#include "RakNet/RakPeerInterface.h" //include changed to correct directory
+#include "RakNet/MessageIdentifiers.h" //include changed to correct directory
+#include "RakNet/BitStream.h" // include changed to correct directory
+#include "RakNet/RakNetTypes.h"  // MessageID // include changed to correct directory
+#include "RakNet/GetTime.h"
+
+enum GameMessages
+{
+	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1,
+	ID_GAME_MESSAGE_2 = ID_USER_PACKET_ENUM + 2,
+	ID_GAME_MESSAGE_3 = ID_USER_PACKET_ENUM + 3,
+	ID_GAME_MESSAGE_4 = ID_USER_PACKET_ENUM + 4 // recieve client boids
+};
+// message to send to plugin
+#pragma pack(push, 1)
+struct BloidMessage
+{
+	char typeID = ID_GAME_MESSAGE_1;
+
+	unsigned char useTimeStamp = ID_TIMESTAMP; // Assign ID_TIMESTAMP to this
+	RakNet::Time timeStamp; // Put the system time in here returned by RakNet::GetTime() or some other method that returns a similar value
+
+	int objectId;
+	float x, y, z;
+	int direction;
+};
+#pragma pack(pop)
 
 //(Project2)  data structure used for managing server stored boids.
 struct Bloid

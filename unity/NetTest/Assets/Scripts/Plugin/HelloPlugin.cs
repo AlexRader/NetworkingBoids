@@ -23,6 +23,6 @@ public class HelloPlugin : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-        Debug.Log("counter = " + counter.ToString() + ", foo = " + foo(counter++).ToString());
+        //Debug.Log("counter = " + counter.ToString() + ", foo = " + foo(counter++).ToString());
 	}
 }
