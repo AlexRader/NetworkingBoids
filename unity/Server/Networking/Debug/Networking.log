@@ -1,0 +1,38 @@
+﻿  Data.cpp
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\data.h(45): warning C4305: 'initializing': truncation from 'GameMessages' to 'char'
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\data.h(45): warning C4309: 'initializing': truncation of constant value
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\data.cpp(39): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\data.cpp(41): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\data.cpp(46): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\data.cpp(48): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\data.cpp(53): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\data.cpp(55): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+  Proj2Events.cpp
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\data.h(45): warning C4305: 'initializing': truncation from 'GameMessages' to 'char'
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\data.h(45): warning C4309: 'initializing': truncation of constant value
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\proj2events.cpp(89): warning C4305: '=': truncation from 'GameMessages' to 'char'
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\proj2events.cpp(89): warning C4309: '=': truncation of constant value
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\proj2events.cpp(83): warning C4101: 'newPacket': unreferenced local variable
+  main.cpp
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\data.h(45): warning C4305: 'initializing': truncation from 'GameMessages' to 'char'
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\data.h(45): warning C4309: 'initializing': truncation of constant value
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\main.cpp(121): warning C4244: '=': conversion from 'RakNet::TimeMS' to 'float', possible loss of data
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\main.cpp(122): warning C4244: '=': conversion from 'RakNet::TimeMS' to 'float', possible loss of data
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\main.cpp(129): warning C4244: 'argument': conversion from 'RakNet::Time' to 'float', possible loss of data
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\main.cpp(138): warning C4244: '=': conversion from 'RakNet::TimeMS' to 'float', possible loss of data
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\main.cpp(157): warning C4305: '=': truncation from 'GameMessages' to 'char'
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\main.cpp(157): warning C4309: '=': truncation of constant value
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\main.cpp(161): warning C4018: '<': signed/unsigned mismatch
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\main.cpp(175): warning C4018: '<': signed/unsigned mismatch
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\main.cpp(193): warning C4244: 'argument': conversion from 'RakNet::Time' to 'float', possible loss of data
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\main.cpp(219): warning C4305: '=': truncation from 'GameMessages' to 'char'
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\main.cpp(219): warning C4309: '=': truncation of constant value
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\main.cpp(221): warning C4018: '<': signed/unsigned mismatch
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\main.cpp(236): warning C4305: '=': truncation from 'GameMessages' to 'char'
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\main.cpp(236): warning C4309: '=': truncation of constant value
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\main.cpp(311): warning C4018: '<': signed/unsigned mismatch
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\main.cpp(341): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\main.cpp(342): warning C4018: '<': signed/unsigned mismatch
+c:\users\rosser.martinez\desktop\deadmanwalkin\unity\server\networking\main.cpp(366): warning C4244: '=': conversion from 'RakNet::TimeMS' to 'float', possible loss of data
+  Generating Code...
+  Networking.vcxproj -> C:\Users\rosser.martinez\Desktop\DEADMANWALKIN\unity\Server\Networking\Debug\Networking.exe

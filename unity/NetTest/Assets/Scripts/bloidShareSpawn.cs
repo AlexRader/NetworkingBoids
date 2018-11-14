@@ -21,9 +21,9 @@ public class bloidShareSpawn : myDataStructs
     [Tooltip("modifiable ip address so you can use this on diff computers")]
     public Text ipAddress;
     [Tooltip("list of the boids spawned here from server")]
-    public List<GameObject> bloidList1; // all objects
+    public List<GameObject> bloidListAll; // all objects
     [Tooltip("list of the boids spawned here from server that client can control")]
-    public List<GameObject> bloidList2; // my objects to update locally 
+    public List<GameObject> bloidListLocal; // my objects to update locally 
     [Tooltip("set true when boid was found")]
     public bool found;
     [Tooltip("used to signal initial game state is loaded")]
@@ -50,23 +50,55 @@ public class bloidShareSpawn : myDataStructs
     {
         if (allowUpdates)
         {
-            //updates my objects
-            for (int i = 0; i < bloidList2.Count; ++i)
+            //simulates local position of local objects
+            for (int i = 0; i < bloidListLocal.Count; ++i)
             {
-                currentObj = bloidList2[i].GetComponent<BoidBehavior>();
+                currentObj = bloidListLocal[i].GetComponent<BoidBehavior>();
                 currentObj.SendMessage("simulatePos");
             }
+
             BloidData newData = receiveData();
-            //update all objects
+
+            //get timestamp from newdata and set relative times
+            float currentTime = Time.deltaTime;
+            float timeStamp = Time.deltaTime + newData.timeStamp;
+            float timeStep = Time.deltaTime + (timeStamp * 2.0f);
+        
+            //tmp variables for loop iteration
+            BoidBehavior tmp;
+            Vector3 initialPos, timestepPos, timestepX2Pos, average, velFinal;
+
+            //simulate all objects
             if (newData.objectId >= 0)
             {
-                for (int i = 0; i < bloidList1.Count && !found; i++)
+                for (int i = 0; i < bloidListAll.Count && !found; i++)
                 {
                     // find the object and update it
-                    if (bloidList1[i].GetComponent<BoidBehavior>().objId == newData.objectId)
+                    tmp = bloidListAll[i].GetComponent<BoidBehavior>();
+
+
+                    if (tmp.objId == newData.objectId)
                     {
-                        bloidList1[i].GetComponent<BoidBehavior>().SendMessage("setPos", new Vector3(newData.x, newData.y, newData.z));
-                        bloidList1[i].GetComponent<BoidBehavior>().direction = newData.direction;
+                        //calculate position with dead reckoning
+                        //at current time
+                        initialPos    = deadReckon(tmp.transform.position, tmp.velocity, tmp.acceleration, currentTime);
+                        //at timestamp
+                        timestepPos   = deadReckon(tmp.transform.position, tmp.velocity, tmp.acceleration, timeStamp);
+                        //at double the timestamp
+                        timestepX2Pos = deadReckon(tmp.transform.position, tmp.velocity, tmp.acceleration, timeStep);
+
+                        //average vector of the three for the position
+                        average.x = (initialPos.x + timestepPos.x + timestepX2Pos.x) / 3;
+                        average.y = (initialPos.y + timestepPos.y + timestepX2Pos.y) / 3;
+                        average.z = (initialPos.z + timestepPos.z + timestepX2Pos.z) / 3;
+
+                        //set velocity of boid for future
+                        velFinal = tmp.velocity + (tmp.acceleration * timeStamp);
+
+                        //send position, direction, and final velocity to individual bloid, nice
+                        tmp.velocity = velFinal; 
+                        tmp.SendMessage("setPos", average);
+                        tmp.direction = newData.direction;
                         found = true;
                     }
                 }
@@ -75,12 +107,24 @@ public class bloidShareSpawn : myDataStructs
                 {
                     GameObject dorkus = Instantiate(boid, new Vector3(newData.x, newData.y, newData.z), Quaternion.identity);
                     dorkus.GetComponent<BoidBehavior>().objId = newData.objectId;
-                    bloidList1.Add(dorkus);
+                    bloidListAll.Add(dorkus);
                 }
                 found = false;
             }
         }
     }
+
+    public Vector3 deadReckon(Vector3 cPos, Vector3 cVel, Vector3 cAcc, float time)
+    {
+        Vector3 updatedPosition;
+
+        updatedPosition = cPos + (cVel * time) + (.5f * cAcc * (time * time));
+
+        Debug.Log(updatedPosition);
+
+        return updatedPosition;
+    }
+
     //loads sent server data for already spawned gameobjects.
     IEnumerator InitialLoad()
     {
@@ -90,7 +134,7 @@ public class bloidShareSpawn : myDataStructs
         {
             GameObject dorkus = Instantiate(boid, new Vector3(newData.x, newData.y, newData.z), Quaternion.identity);
             dorkus.GetComponent<BoidBehavior>().objId = newData.objectId;
-            bloidList1.Add(dorkus);
+            bloidListAll.Add(dorkus);
             StartCoroutine("InitialLoad");
         }
         else if (newData.objectId == -1)
@@ -109,8 +153,8 @@ public class bloidShareSpawn : myDataStructs
             GameObject dorkus = Instantiate(boid, new Vector3(newData.x, newData.y, newData.z), Quaternion.identity);
             dorkus.GetComponent<BoidBehavior>().objId = newData.objectId;
             dorkus.GetComponent<Renderer>().material.color = Color.red;
-            bloidList1.Add(dorkus);
-            bloidList2.Add(dorkus);
+            bloidListAll.Add(dorkus);
+            bloidListLocal.Add(dorkus);
             StartCoroutine("MyObjects");
         }
         else if (newData.objectId == -1)
@@ -125,10 +169,10 @@ public class bloidShareSpawn : myDataStructs
     IEnumerator SendData()
     {
         yield return new WaitForSeconds(.1f);
-        for (int i = 0; i < bloidList2.Count; ++i)
+        for (int i = 0; i < bloidListLocal.Count; ++i)
         {
-            currentObj = bloidList2[i].GetComponent<BoidBehavior>();
-            currObjTrans = bloidList2[i].transform.position;
+            currentObj = bloidListLocal[i].GetComponent<BoidBehavior>();
+            currObjTrans = bloidListLocal[i].transform.position;
             sendData(currentObj.objId, currObjTrans.x, currObjTrans.y, currObjTrans.z, currentObj.direction);
         }
         StartCoroutine("SendData"); // this is here so send data is called

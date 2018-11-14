@@ -47,9 +47,9 @@ BloidData receiveData()
 		{
 			const BloidMessage *newBloidData = (BloidMessage *)packet->data;
 
-
 			BloidData newData;
 
+			newData.timeStamp = newBloidData->timeStamp;
 			newData.objectId = newBloidData->objectId;
 			newData.x = newBloidData->x;
 			newData.y = newBloidData->y;
@@ -127,6 +127,7 @@ BloidData InitialData()
 
 			BloidData newData;
 
+			newData.timeStamp = newBloidData->timeStamp;
 			newData.objectId = newBloidData->objectId;
 			newData.x = newBloidData->x;
 			newData.y = newBloidData->y;

@@ -48,9 +48,13 @@ enum GameMessages
 };
 #pragma pack(push, 1)
 //(Project2) the sent bloid over network
-struct BloidMessage {
+struct BloidMessage
+{
+	unsigned char useTimeStamp = ID_TIMESTAMP; // Assign ID_TIMESTAMP to this
+	RakNet::Time timeStamp; // Put the system time in here returned by RakNet::GetTime() or some other method that returns a similar value
 
-	char typeID;
+	char typeID = ID_GAME_MESSAGE_1;
+
 
 	int objectId;
 	float x, y, z;
@@ -58,10 +62,12 @@ struct BloidMessage {
 
 };
 #pragma pack(pop)
-//(Project2) the incomming data to be used by unity
+//(Project2) the incoming data to be used by unity
 #pragma pack(push, 1)
 struct BloidData {
 
+
+	float timeStamp = -1;
 	int objectId = -1;
 	float x = 0;
 	float y = 0;

@@ -17,29 +17,32 @@ communicate a copy of this project to a plagiarism-checking service, which may
 retain a copy of the project on its database.”
 */
 
-#include <vector>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>     
-#include <time.h>       
-#include <ctype.h> // needed for strlen
-#include "RakNet/RakPeerInterface.h" //include changed to correct directory
-#include "RakNet/MessageIdentifiers.h" //include changed to correct directory
-#include "RakNet/BitStream.h" // include changed to correct directory
-#include "RakNet/RakNetTypes.h"  // MessageID // include changed to correct directory
-#include "RakNet/GetTime.h"
+//#include <vector>
+//#include <stdio.h>
+//#include <string.h>
+//#include <stdlib.h>     
+//#include <time.h>       
+//#include <ctype.h> // needed for strlen
+//#include "RakNet/RakPeerInterface.h" //include changed to correct directory
+//#include "RakNet/MessageIdentifiers.h" //include changed to correct directory
+//#include "RakNet/BitStream.h" // include changed to correct directory
+//#include "RakNet/RakNetTypes.h"  // MessageID // include changed to correct directory
+//#include "RakNet/GetTime.h"
 
 #include "Proj2Events.h"
 #include "Proj2Queue.h"
 #include "Data.h"
 
-enum GameMessages
-{
-	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1,
-	ID_GAME_MESSAGE_2 = ID_USER_PACKET_ENUM + 2,
-	ID_GAME_MESSAGE_3 = ID_USER_PACKET_ENUM + 3,
-	ID_GAME_MESSAGE_4 = ID_USER_PACKET_ENUM + 4 // recieve client boids
-};
+//enum GameMessages
+//{
+//	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1,
+//	ID_GAME_MESSAGE_2 = ID_USER_PACKET_ENUM + 2,
+//	ID_GAME_MESSAGE_3 = ID_USER_PACKET_ENUM + 3,
+//	ID_GAME_MESSAGE_4 = ID_USER_PACKET_ENUM + 4 // recieve client boids
+//};
+
+
+EventManager *EventManager::mpInstance = 0;
 
 
 #pragma pack(push, 1)
@@ -50,21 +53,21 @@ struct customMessage
 };
 #pragma pack(pop)
 
-// message to send to plugin
-#pragma pack(push, 1)
-struct BloidMessage 
-{
-	//GameMessages typeId = ID_GAME_MESSAGE_1;
-	char typeID = ID_GAME_MESSAGE_1;
-
-	//BloidData sentBloid;
-
-	int objectId;
-	float x, y, z;
-	int direction;
-
-};
-#pragma pack(pop)
+//// message to send to plugin
+//#pragma pack(push, 1)
+//struct BloidMessage 
+//{
+//	//GameMessages typeId = ID_GAME_MESSAGE_1;
+//	char typeID = ID_GAME_MESSAGE_1;
+//
+//	//BloidData sentBloid;
+//
+//	int objectId;
+//	float x, y, z;
+//	int direction;
+//
+//};
+//#pragma pack(pop)
 
 // needed for RakNet Defined classes, and structs 
 using namespace RakNet;
@@ -177,6 +180,9 @@ int main(void)
 						myBloidMessage->z = bloids.at(i).z;
 						myBloidMessage->direction = bloids.at(i).direction;
 						peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+
+
+
 					}
 					myModifyMessage->typeId = ID_GAME_MESSAGE_3; // (Project2)known as an end of bloids list to the plugin
 					peer->Send((char*)myModifyMessage, sizeof(customMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
@@ -189,15 +195,24 @@ int main(void)
 
 						bloids.push_back(newBloid);
 
-						myBloidMessage->objectId = newBloid.objectId;
-						myBloidMessage->x = newBloid.x;
-						myBloidMessage->y = newBloid.y;
-						myBloidMessage->z = newBloid.z;
-						myBloidMessage->direction = newBloid.direction;
-						peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+						UpdateBloidEvent *updateEvent = new UpdateBloidEvent(peer, newBloid.objectId, newBloid.x, newBloid.y, newBloid.z, newBloid.direction, packet);
+
+						EventManager::getInstance()->enqueueEvent(updateEvent);
+
+
+						//myBloidMessage->objectId = newBloid.objectId;
+						//myBloidMessage->x = newBloid.x;
+						//myBloidMessage->y = newBloid.y;
+						//myBloidMessage->z = newBloid.z;
+						//myBloidMessage->direction = newBloid.direction;
+						//peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 					}
-					myModifyMessage->typeId = ID_GAME_MESSAGE_3;
-					peer->Send((char*)myModifyMessage, sizeof(customMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+
+
+					//myModifyMessage->typeId = ID_GAME_MESSAGE_3;
+					//peer->Send((char*)myModifyMessage, sizeof(customMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+
+
 					//(Project2) this is really just a fix for coupling not spawning everyone (well it works but not quite)
 					if (serverType == 3)
 					{
@@ -205,6 +220,8 @@ int main(void)
 
 						for (int i = 0; i < bloids.size(); ++i)
 						{
+
+
 
 							myBloidMessage->objectId = bloids.at(i).objectId;
 							myBloidMessage->x = bloids.at(i).x;
@@ -293,22 +310,27 @@ int main(void)
 				timeServerUpdate = timeCurr;
 				for (int i = 0; i < bloids.size(); ++i)
 				{
-					bloids.at(i).updateBloid(RakNet::GetTime());
-					myBloidMessage->objectId = bloids.at(i).objectId;
-					myBloidMessage->x = bloids.at(i).x;
-					myBloidMessage->y = bloids.at(i).y;
-					myBloidMessage->z = bloids.at(i).z;
-					myBloidMessage->direction = bloids.at(i).direction;
 
-					//(Project2) testing for id and direction
-					//std::cout
-					//	<< "ID: "
-					//	<< myBloidMessage->objectId
-					//	<< " | DIRECTION: "
-					//	<< myBloidMessage->direction
-					//	<< " \n";
+					//replace below code with an event system
+					UpdateBloidEvent *updateEvent = new UpdateBloidEvent(peer, bloids.at(i).objectId, bloids.at(i).x, bloids.at(i).y, bloids.at(i).z, bloids.at(i).direction, packet);
 
-					peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+					EventManager::getInstance()->enqueueEvent(updateEvent);
+					//bloids.at(i).updateBloid(RakNet::GetTime());
+					//myBloidMessage->objectId = bloids.at(i).objectId;
+					//myBloidMessage->x = bloids.at(i).x;
+					//myBloidMessage->y = bloids.at(i).y;
+					//myBloidMessage->z = bloids.at(i).z;
+					//myBloidMessage->direction = bloids.at(i).direction;
+
+					////(Project2) testing for id and direction
+					////std::cout
+					////	<< "ID: "
+					////	<< myBloidMessage->objectId
+					////	<< " | DIRECTION: "
+					////	<< myBloidMessage->direction
+					////	<< " \n";
+
+					//peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 				}
 			}
 			//(Project2) switch direction of travel.
@@ -320,24 +342,30 @@ int main(void)
 				for (int i = 0; i < bloids.size(); ++i)
 				{
 					bloids.at(i).setBloidDirection();
-					myBloidMessage->objectId = bloids.at(i).objectId;
-					myBloidMessage->x = bloids.at(i).x;
-					myBloidMessage->y = bloids.at(i).y;
-					myBloidMessage->z = bloids.at(i).z;
-					myBloidMessage->direction = bloids.at(i).direction;
 
-					//std::cout
-					//	<< "ID: "
-					//	<< myBloidMessage->objectId
-					//	<< " | DIRECTION: "
-					//	<< myBloidMessage->direction
-					//	<< " \n";
+					UpdateBloidEvent *updateEvent = new UpdateBloidEvent(peer, bloids.at(i).objectId, bloids.at(i).x, bloids.at(i).y, bloids.at(i).z, bloids.at(i).direction, packet);
 
-					peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+					EventManager::getInstance()->enqueueEvent(updateEvent);
+
+					//myBloidMessage->objectId = bloids.at(i).objectId;
+					//myBloidMessage->x = bloids.at(i).x;
+					//myBloidMessage->y = bloids.at(i).y;
+					//myBloidMessage->z = bloids.at(i).z;
+					//myBloidMessage->direction = bloids.at(i).direction;
+
+					////std::cout
+					////	<< "ID: "
+					////	<< myBloidMessage->objectId
+					////	<< " | DIRECTION: "
+					////	<< myBloidMessage->direction
+					////	<< " \n";
+
+					//peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
 				}
 			}
-
 			timeCurr = RakNet::GetTimeMS();
+			EventManager::getInstance()->executeQueuedEvents();
+
 		}
 	}
 

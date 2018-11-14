@@ -19,6 +19,7 @@ This file was added to the project for access to an event and queue system
 #include <random>
 #include "RakNet/RakNetTypes.h"
 #include "RakNet/RakPeerInterface.h"
+#include "RakNet/GetTime.h"
 
 //Events, event types, eventmanager - Rosser
 
@@ -28,8 +29,7 @@ class Queue;
 enum EventType {
 
 	JOIN_EVENT,
-	PRINT_CAT_EVENT,
-	RUSSIAN_ROULETTE_EVENT
+	UPDATE_BLOID_STATE_EVENT,
 
 };
 
@@ -69,36 +69,29 @@ private:
 	unsigned short mPort;
 };
 
-//prints halloween cat
-class PrintCatEvent : public Event
+
+class UpdateBloidEvent : public Event
 {
 public:
-	PrintCatEvent();
-	~PrintCatEvent();
+	UpdateBloidEvent();	
+	UpdateBloidEvent(RakNet::RakPeerInterface *targetPeer, int id, float x, float y, float z, int dir, RakNet::Packet *pak);
+	~UpdateBloidEvent();
 
 	void execute();
 
 private:
+
+	RakNet::RakPeerInterface *peerInstance;
+	RakNet::Packet *packet;
+	float timeStamp;
 	EventType mEventType;
 
-
-
+	int objectId;
+	float xPos, yPos, zPos;
+	int direction;
+	
 };
 
-//russian roulette event to randomly crash your client (maybe)
-class RussianRouletteEvent : public Event
-{
-public:
-	RussianRouletteEvent();
-	~RussianRouletteEvent();
-
-	//rng to determine if the player will disconnect or not 
-
-	void execute();
-
-private:
-	EventType mEventType;
-};
 
 
 //event manager with queue
