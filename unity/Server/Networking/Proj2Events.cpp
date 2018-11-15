@@ -13,6 +13,7 @@ This file was added to the project for access to an event and queue system
 */
 #include "Proj2Events.h"
 #include "Proj2Queue.h"
+#include "Data.h"
 ///
 
 
@@ -56,83 +57,127 @@ void JoinEvent::execute()
 }
 
 
-//PRINT CAT EVENT
-PrintCatEvent::PrintCatEvent()
-{
-	mEventType = PRINT_CAT_EVENT;
-}
-PrintCatEvent::~PrintCatEvent()
-{
 
-}
-void PrintCatEvent::execute()
+UpdateBloidEvent::UpdateBloidEvent()
 {
-	//woooOOOOooo print SPOOKY HALLOWEEN CAT
-	printf("\n");
-printf("                                                            .-----.		   \n");
-printf("                                                          ,' __/|_ `.	   \n");
-printf("                                                         ,    {~)    :	   \n");
-printf("                                        /:\              :   //~_)  _:__   \n");
-printf("                            __,---.__ /::::\             : ~~~/' \~~====   \n");
-printf("                           `-.__     \:::::/              :   ~;;~  .'	   \n");
-printf("                             ;;:\--.__`--.--._             `._____.'	   \n");
-printf("                           ,;;'` `    `--.__  `-._						   \n");
-printf("                           `,  ,\       /,  `--.__;						   \n");
-printf("                           <   (o) ___ (o)   >							   \n");
-printf("                          <        \:/        >							   \n");
-printf("                           <     ._/\\_.     >							   \n");
-printf("                   _.---._  `-.    ~~~    .-'							   \n");
-printf("                 .'._.--. `.   `~:~~~~~~:'								   \n");
-printf("                 `-'     `. `.  :        :								   \n");
-printf("                          :__: :________  :___							   \n");
-printf("                      ;'xx:XXxxxxxxxxxx:xxxXXX:xx:						   \n");
-printf("                    :::xx:XXXX:xxxxxxxxx:XXXXXX:xxx:.					   \n");
-printf("                   ::xxx:XXX/X;xxxxxxxxxx:XXXXXX:xxx:.					   \n");
-printf("           |||    ::xxx:XXX// xxxxxxxxxx// XXXXXX:xxx:.         []		   \n");
-printf("         ||||||  ||xxxx:XX//   xxxxxxxx//   XXXXXX:xx||     .:||:|:||.	   \n");
-printf("    ___    |||   ||xxx:XX//  0  xxxxxx// 0   XXXXX:xx||    .:||^:|:^||.	   \n");
-printf("  ,'   `.. |||   `::xx:XXXXX:xxxx/ \\xxxxx:XXXXXXXX:xx:'   ::|:::V:::|:	   \n");
-printf("  |     || |||    `::xx:XXXXX:xxx___Xxxx:XXXXXXXX:xx:'     `::|UUUUU:|'	   \n");
-printf("  |R.I.P|| |||     `::xx:XXXXXxxxxxxxxxxxXXXXXXX:x::'       `::|::::|'	   \n");
-printf("  |     ||""""      ':xx:XX \\/  \\/  \\/ \\/XXXXX:xx:'       """"""""""   \n");
-printf(" """"""""             '.x:XXXXxxxxxxxxxxXXXXxx;'''						   \n");
-printf("""""""""""""""""""""""   ~~~~~~~~~~~~~~~~~~~~~~   """""""""""""""""""""""" \n");
-printf("\n");
-
-
+	mEventType = SPAWN_BLOID_EVENT;
 }
 
-//
-RussianRouletteEvent::RussianRouletteEvent()
+
+UpdateBloidEvent::UpdateBloidEvent(RakNet::RakPeerInterface *targetPeer, BloidMessage *recieved, RakNet::Packet *pak)
 {
-	mEventType = RUSSIAN_ROULETTE_EVENT;
+	peerInstance = targetPeer;
+	bloidMsg = recieved;
+	packet = pak;
 }
-RussianRouletteEvent::~RussianRouletteEvent()
+
+
+UpdateBloidEvent::~UpdateBloidEvent()
 {
 
 }
 
-void RussianRouletteEvent::execute()
+void UpdateBloidEvent::execute()
+{
+	mEventType = UPDATE_BLOID_STATE_EVENT;
+
+	BloidMessage myBloidMessage[1];
+
+	myBloidMessage->objectId = bloidMsg->objectId;
+
+	myBloidMessage->x = bloidMsg->x;
+	myBloidMessage->y = bloidMsg->y;
+	myBloidMessage->z = bloidMsg->z;
+	
+	myBloidMessage->direction = bloidMsg->direction;
+
+	myBloidMessage->timeStamp = RakNet::GetTimeMS();
+
+	peerInstance->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->guid, true);
+}
+
+
+
+SpawnBloidEvent::SpawnBloidEvent()
+{
+	mEventType = UPDATE_BLOID_STATE_EVENT;
+}
+
+SpawnBloidEvent::SpawnBloidEvent(RakNet::RakPeerInterface *peer, int id, float x, float y, float z, int dir, RakNet::Packet *pak)
+{
+	//dont set timestamp til sent
+	//timeStamp = RakNet::GetTime();
+	mEventType = UPDATE_BLOID_STATE_EVENT;
+
+	peerInstance = peer;
+	objectId = id;
+	xPos = x;
+	yPos = y;
+	zPos = z;
+	direction = dir;
+	packet = pak;
+}
+
+void SpawnBloidEvent::execute()
 {
 
-	//russian roulette to disconnect and kill your client
+	RakNet::Packet *newPacket;
+	//send positions of boid to client
 
-	int trigger = rand() % 5; //6 chambers, 1 bullet
+	BloidMessage myBloidMessage[1];
 
-	if (trigger == 0)
-	{
-		//haha anime
-		printf("\n omae wa mou shindeiru \n NANI!?!?!?!?");
-		system("Pause");
-		std::exit(EXIT_SUCCESS);
-	}
-	else
-	{
-		//not disconnecting your client
-		printf("\n hey great job not shooting yourself \n");
-	}
+
+	myBloidMessage->typeID = ID_GAME_MESSAGE_2;
+
+	myBloidMessage->objectId = objectId;
+	myBloidMessage->x = xPos;
+	myBloidMessage->y = yPos;
+	myBloidMessage->z = zPos;
+	myBloidMessage->direction = direction;
+
+	myBloidMessage->timeStamp = RakNet::GetTimeMS();
+
+	peerInstance->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 
 }
+
+SpawnBloidEvent::~SpawnBloidEvent()
+{
+
+}
+
+
+//printf("                                                            .-----.		   \n");
+//printf("                                                          ,' __/|_ `.	   \n");
+//printf("                                                         ,    {~)    :	   \n");
+//printf("                                        /:\              :   //~_)  _:__   \n");
+//printf("                            __,---.__ /::::\             : ~~~/' \~~====   \n");
+//printf("                           `-.__     \:::::/              :   ~;;~  .'	   \n");
+//printf("                             ;;:\--.__`--.--._             `._____.'	   \n");
+//printf("                           ,;;'` `    `--.__  `-._						   \n");
+//printf("                           `,  ,\       /,  `--.__;						   \n");
+//printf("                           <   (o) ___ (o)   >							   \n");
+//printf("                          <        \:/        >							   \n");
+//printf("                           <     ._/\\_.     >							   \n");
+//printf("                   _.---._  `-.    ~~~    .-'							   \n");
+//printf("                 .'._.--. `.   `~:~~~~~~:'								   \n");
+//printf("                 `-'     `. `.  :        :								   \n");
+//printf("                          :__: :________  :___							   \n");
+//printf("                      ;'xx:XXxxxxxxxxxx:xxxXXX:xx:						   \n");
+//printf("                    :::xx:XXXX:xxxxxxxxx:XXXXXX:xxx:.					   \n");
+//printf("                   ::xxx:XXX/X;xxxxxxxxxx:XXXXXX:xxx:.					   \n");
+//printf("           |||    ::xxx:XXX// xxxxxxxxxx// XXXXXX:xxx:.         []		   \n");
+//printf("         ||||||  ||xxxx:XX//   xxxxxxxx//   XXXXXX:xx||     .:||:|:||.	   \n");
+//printf("    ___    |||   ||xxx:XX//  0  xxxxxx// 0   XXXXX:xx||    .:||^:|:^||.	   \n");
+//printf("  ,'   `.. |||   `::xx:XXXXX:xxxx/ \\xxxxx:XXXXXXXX:xx:'   ::|:::V:::|:	   \n");
+//printf("  |     || |||    `::xx:XXXXX:xxx___Xxxx:XXXXXXXX:xx:'     `::|UUUUU:|'	   \n");
+//printf("  |R.I.P|| |||     `::xx:XXXXXxxxxxxxxxxxXXXXXXX:x::'       `::|::::|'	   \n");
+//printf("  |     ||""""      ':xx:XX \\/  \\/  \\/ \\/XXXXX:xx:'       """"""""""   \n");
+//printf(" """"""""             '.x:XXXXxxxxxxxxxxXXXXxx;'''						   \n");
+//printf("""""""""""""""""""""""   ~~~~~~~~~~~~~~~~~~~~~~   """""""""""""""""""""""" \n");
+//printf("\n");
+
+
 
 //Eventmanager with member queue
 EventManager::EventManager()

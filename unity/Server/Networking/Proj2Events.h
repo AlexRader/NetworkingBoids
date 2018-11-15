@@ -24,12 +24,27 @@ This file was added to the project for access to an event and queue system
 
 class Queue;
 
+#pragma pack(push, 1)
+struct BloidMessage
+{
+	char typeID = ID_GAME_MESSAGE_1;
+
+	unsigned char useTimeStamp = ID_TIMESTAMP; // Assign ID_TIMESTAMP to this
+	RakNet::Time timeStamp; // Put the system time in here returned by RakNet::GetTime() or some other method that returns a similar value
+
+	int objectId;
+	float x, y, z;
+	int direction;
+};
+#pragma pack(pop)
+
+
 //types of events
 enum EventType {
 
 	JOIN_EVENT,
-	PRINT_CAT_EVENT,
-	RUSSIAN_ROULETTE_EVENT
+	SPAWN_BLOID_EVENT,
+	UPDATE_BLOID_STATE_EVENT,
 
 };
 
@@ -69,37 +84,50 @@ private:
 	unsigned short mPort;
 };
 
-//prints halloween cat
-class PrintCatEvent : public Event
+class SpawnBloidEvent : public Event
 {
 public:
-	PrintCatEvent();
-	~PrintCatEvent();
+	SpawnBloidEvent();
+	SpawnBloidEvent(RakNet::RakPeerInterface *targetPeer, int id, float x, float y, float z, int dir, RakNet::Packet *pak);
+	~SpawnBloidEvent();
 
 	void execute();
 
 private:
+
+	RakNet::RakPeerInterface *peerInstance;
+	RakNet::Packet *packet;
+	float timeStamp;
 	EventType mEventType;
 
-
+	int objectId;
+	float xPos, yPos, zPos;
+	int direction;
 
 };
 
-//russian roulette event to randomly crash your client (maybe)
-class RussianRouletteEvent : public Event
+class UpdateBloidEvent : public Event
 {
 public:
-	RussianRouletteEvent();
-	~RussianRouletteEvent();
-
-	//rng to determine if the player will disconnect or not 
+	UpdateBloidEvent();
+	UpdateBloidEvent(RakNet::RakPeerInterface *targetPeer, BloidMessage *recieved, RakNet::Packet *pak);
+	~UpdateBloidEvent();
 
 	void execute();
 
 private:
-	EventType mEventType;
-};
 
+	RakNet::RakPeerInterface *peerInstance;
+	RakNet::Packet *packet;
+	BloidMessage *bloidMsg;
+
+	float timeStamp;
+	EventType mEventType;
+
+	int objectId;
+
+
+};
 
 //event manager with queue
 class EventManager
