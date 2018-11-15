@@ -50,11 +50,9 @@ enum GameMessages
 //(Project2) the sent bloid over network
 struct BloidMessage
 {
+	char typeID = ID_GAME_MESSAGE_1;
 	unsigned char useTimeStamp = ID_TIMESTAMP; // Assign ID_TIMESTAMP to this
 	RakNet::Time timeStamp; // Put the system time in here returned by RakNet::GetTime() or some other method that returns a similar value
-
-	char typeID = ID_GAME_MESSAGE_1;
-
 
 	int objectId;
 	float x, y, z;
@@ -96,7 +94,7 @@ struct customMessage
 	BloidInfo BloidData receiveData();
 
 	//send data back to server (Project2)
-	BloidInfo void sendData(int id, float x, float y, float z, int dir);
+	BloidInfo void sendData(int id, float tStamp,float x, float y, float z, int dir);
 
 	//disconnect (Project2)
 	BloidInfo void kickRequest();

@@ -71,14 +71,14 @@ BloidData receiveData()
 
 
 	//send data back to server (Project2)
-void sendData(int id, float x, float y, float z, int dir)
+void sendData(int id, float tStamp, float x, float y, float z, int dir)
 {
 
 	//message as "game message type"
 	BloidMessage bloid;
 	
 	bloid.typeID = ID_GAME_MESSAGE_4;
-
+	bloid.timeStamp = tStamp;
 	bloid.objectId = id;
 	bloid.x = x;
 	bloid.y = y;
