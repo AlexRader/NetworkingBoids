@@ -71,6 +71,8 @@ public class bloidCoupledSpawn : myDataStructs
             float timeStamp = Time.deltaTime + newData.timeStamp;
             float timeStep = Time.deltaTime + (timeStamp * 2.0f);
 
+            //Debug.Log("TS: " + newData.timeStamp);
+
             //tmp variables for loop iteration
             BoidBehavior tmp;
             Vector3 initialPos, timestepPos, /*timestepX2Pos,*/ average, velFinal;
