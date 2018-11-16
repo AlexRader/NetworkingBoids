@@ -41,6 +41,7 @@ retain a copy of the project on its database.”
 //	ID_GAME_MESSAGE_4 = ID_USER_PACKET_ENUM + 4 // recieve client boids
 //};
 
+EventManager *EventManager::mpInstance = 0;
 
 #pragma pack(push, 1)
 struct customMessage
@@ -204,19 +205,28 @@ int main(void)
 					//(Project2) this is really just a fix for coupling not spawning everyone (well it works but not quite)
 					if (serverType == 3)
 					{
-						myBloidMessage->typeID = ID_GAME_MESSAGE_1;
+						myBloidMessage->typeID = ID_GAME_MESSAGE_2;
 
 						for (int i = 0; i < bloids.size(); ++i)
 						{
 
+							SpawnBloidEvent *spawn = new SpawnBloidEvent(peer, bloids.at(i).objectId, bloids.at(i).x, bloids.at(i).y, bloids.at(i).z, bloids.at(i).direction, packet);
+
+							EventManager::getInstance()->enqueueEvent(spawn);
+
+							/*
 							myBloidMessage->objectId = bloids.at(i).objectId;
 							myBloidMessage->x = bloids.at(i).x;
 							myBloidMessage->y = bloids.at(i).y;
 							myBloidMessage->z = bloids.at(i).z;
 							myBloidMessage->direction = bloids.at(i).direction;
 							myBloidMessage->timeStamp = RakNet::GetTimeMS();
-							peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+							peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);*/
+
 						}
+						
+						//queue here before packets get deallocated 
+						EventManager::getInstance()->executeQueuedEvents();
 					}
 				}
 
@@ -262,33 +272,44 @@ int main(void)
 				//sprintf(str1, "%d", newBloidData->objectId);
 				//printf("%s\n", str1);
 
-				//printf("%s\n", newBloidData->objectId);
-				myBloidMessage->objectId = newBloidData->objectId;
-				if (serverType == 2) //(Project2) if share we need to use a different method of movement than coupled
-				{
-					myBloidMessage->x = bloids.at(newBloidData->objectId).x;
-					myBloidMessage->y = bloids.at(newBloidData->objectId).y;
-					myBloidMessage->z = bloids.at(newBloidData->objectId).z;
-				}
-				else //(Project2) coupled movement Note: one way coupled was explained to me was objects are tracked
-					//on client and sent through the server like a player controlled character
-				{
-					myBloidMessage->x = newBloidData->x;
-					myBloidMessage->y = newBloidData->y;
-					myBloidMessage->z = newBloidData->z;
-				}
-				myBloidMessage->direction = bloids.at(newBloidData->objectId).direction;
-				myBloidMessage->timeStamp = RakNet::GetTimeMS();
-				if (serverType == 2) //(Project2) send the update to everyone on server
-					peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
-				else // (Project2) send to everyone but client who sent the info
-					peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->guid, true);
+				//REPLACE WITH UPDATE EVENT
+
+				UpdateBloidEvent *update = new UpdateBloidEvent(peer, newBloidData, packet);
+
+				EventManager::getInstance()->enqueueEvent(update);
+
+				////printf("%s\n", newBloidData->objectId);
+				//myBloidMessage->objectId = newBloidData->objectId;
+				//if (serverType == 2) //(Project2) if share we need to use a different method of movement than coupled
+				//{
+				//	myBloidMessage->x = bloids.at(newBloidData->objectId).x;
+				//	myBloidMessage->y = bloids.at(newBloidData->objectId).y;
+				//	myBloidMessage->z = bloids.at(newBloidData->objectId).z;
+				//}
+				//else //(Project2) coupled movement Note: one way coupled was explained to me was objects are tracked
+				//	//on client and sent through the server like a player controlled character
+				//{
+				//	myBloidMessage->x = newBloidData->x;
+				//	myBloidMessage->y = newBloidData->y;
+				//	myBloidMessage->z = newBloidData->z;
+				//}
+				//myBloidMessage->direction = bloids.at(newBloidData->objectId).direction;
+				//myBloidMessage->timeStamp = RakNet::GetTimeMS();
+				//if (serverType == 2) //(Project2) send the update to everyone on server
+				//	peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+				//else // (Project2) send to everyone but client who sent the info
+				//	peer->Send((char*)myBloidMessage, sizeof(BloidMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->guid, true);
 			}
 			break;
 			default:
 				printf("Message with identifier %i has arrived.\n", packet->data[0]);
 				break;
 			}
+
+			//queue here before packets get deallocated 
+			EventManager::getInstance()->executeQueuedEvents();
+
+
 		}
 		if (serverType <= 2) // (Project2) the update for data push and share
 		{

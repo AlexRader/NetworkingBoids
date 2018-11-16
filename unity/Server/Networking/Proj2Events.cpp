@@ -64,7 +64,7 @@ UpdateBloidEvent::UpdateBloidEvent()
 }
 
 
-UpdateBloidEvent::UpdateBloidEvent(RakNet::RakPeerInterface *targetPeer, BloidMessage *recieved, RakNet::Packet *pak)
+UpdateBloidEvent::UpdateBloidEvent(RakNet::RakPeerInterface *targetPeer, const BloidMessage *recieved, RakNet::Packet *pak)
 {
 	peerInstance = targetPeer;
 	bloidMsg = recieved;

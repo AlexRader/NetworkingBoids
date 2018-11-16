@@ -19,6 +19,7 @@ This file was added to the project for access to an event and queue system
 #include <random>
 #include "RakNet/RakNetTypes.h"
 #include "RakNet/RakPeerInterface.h"
+#include "Data.h"
 
 //Events, event types, eventmanager - Rosser
 
@@ -110,7 +111,7 @@ class UpdateBloidEvent : public Event
 {
 public:
 	UpdateBloidEvent();
-	UpdateBloidEvent(RakNet::RakPeerInterface *targetPeer, BloidMessage *recieved, RakNet::Packet *pak);
+	UpdateBloidEvent(RakNet::RakPeerInterface *targetPeer, const BloidMessage *recieved, RakNet::Packet *pak);
 	~UpdateBloidEvent();
 
 	void execute();
@@ -119,7 +120,7 @@ private:
 
 	RakNet::RakPeerInterface *peerInstance;
 	RakNet::Packet *packet;
-	BloidMessage *bloidMsg;
+	const BloidMessage *bloidMsg;
 
 	float timeStamp;
 	EventType mEventType;

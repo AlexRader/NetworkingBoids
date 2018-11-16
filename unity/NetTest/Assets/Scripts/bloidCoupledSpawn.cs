@@ -186,7 +186,7 @@ public class bloidCoupledSpawn : myDataStructs
         {
             currentObj = bloidListLocal[i].GetComponent<BoidBehavior>();
             currObjTrans = bloidListLocal[i].transform.position;
-            sendData(currentObj.objId, currObjTrans.x, currObjTrans.y, currObjTrans.z, currentObj.direction);
+            sendData(currentObj.objId, Time.time, currObjTrans.x, currObjTrans.y, currObjTrans.z, currentObj.direction);
         }
         StartCoroutine("SendData"); // this is here so send data is called
 

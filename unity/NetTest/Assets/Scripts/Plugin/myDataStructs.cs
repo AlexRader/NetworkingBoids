@@ -44,7 +44,7 @@ public class myDataStructs : MonoBehaviour
     public static extern BloidData receiveData();
 
     [DllImport("BoidEvents")]
-    public static extern void sendData(int id, float x, float y, float z, int dir);
+    public static extern void sendData(int id, float tStamp, float x, float y, float z, int dir);
 
     [DllImport("BoidEvents")]
     public static extern BloidData Test();
